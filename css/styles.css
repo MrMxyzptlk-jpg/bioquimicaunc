@@ -81,16 +81,12 @@ html, body {
 
   .left,
   .right {
-    width: 100%;
+    width: auto;
     min-height: auto;
-  }
-
-  .left {
     padding: 2rem;
   }
 
   .right {
-    padding: 2rem;
     background-position: 0 -0.2px;
   }
 
@@ -111,10 +107,7 @@ html, body {
   border: solid 1px white;
 }
 
-.socials {
-  display: flex;
-  gap: 1.5rem;
-}
+.socials { display: flex; gap: 1.5rem; }
 
 .socials img {
   width: 28px;
