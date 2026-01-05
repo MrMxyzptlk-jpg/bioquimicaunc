@@ -1,3 +1,17 @@
+.site-header {
+  background-color: #333;
+  color: white;
+  font-family: "Libre Baskerville", serif;
+  font-size: 1.4rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0.2rem 1rem;
+  text-align: center;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -87,7 +101,7 @@ body {
     linear-gradient(#000 1px, transparent 1px),
     linear-gradient(90deg, #000 1px, transparent 1px);
   background-size: 40px 40px;
-
+  background-position: 0 -1px;
 }
 
 .right > * {
