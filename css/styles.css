@@ -1,20 +1,102 @@
 .site-header {
-  background-color: #333;
-  color: white;
-  font-family: "Libre Baskerville", serif;
-  font-size: 1.4rem;
+  position: relative;
 
   display: flex;
-  justify-content: center;
   align-items: center;
 
+  background-color: #333;
+  color: white;
+  min-height: 64px;
   padding: 0.2rem 1rem;
-  text-align: center;
 }
 
-.site-header h1{
-  font-family: 'Courier New', Courier, monospace;
+/* TRUE center — ignores logo completely */
+.site-header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  white-space: nowrap;
+  transition: transform 0.35s ease;
 }
+
+/* Logo stays on the right */
+.menu-logo {
+  margin-left: auto;
+}
+
+.menu-logo img {
+  width: 60px;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid white;
+  transition: width 0.3s ease;
+  margin: 10px;
+}
+
+.site-header.menu-open .menu-logo img {
+  width: 150px;
+}
+
+
+.menu-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.4s ease;
+  margin: 10px;
+}
+
+.site-header.menu-open .menu-panel {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.site-header.menu-open h1 {
+  transform: translateX(-80%);
+}
+
+.menu-panel a {
+  text-decoration: none;
+  color: white;
+}
+
+.menu-panel a:hover{
+  color: #f0abd6;
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    flex-direction: column;
+  }
+
+  .site-header h1 {
+    position: static;
+    transform: none;
+    text-align:center;
+    margin-bottom: 0.5rem;
+  }
+  .site-header {
+    flex-direction: column;
+  }
+
+  .site-header h1 {
+    position: static;
+    transform: none;
+    text-align: center;
+    margin: 0;
+  }
+
+  .site-header.menu-open h1 {
+    margin-right: 0;
+    transform: none;
+  }
+  
+  .menu-logo {
+    margin-left: 0;
+  }
+}
+
 
 .site-footer {
   background-color: #333;
