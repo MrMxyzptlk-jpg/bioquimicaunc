@@ -12,11 +12,29 @@
   text-align: center;
 }
 
+.site-header h1{
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.site-footer {
+  background-color: #333;
+  color: white;
+  font-family: "Libre Baskerville", serif;
+  font-size: 1rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0.5rem 0.2rem;
+  text-align: center;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  min-height: 100vh;
+  min-height: auto;
   color: rgb(255, 238, 238);
   font-family: 'Courier New', Courier, monospace;
 }
@@ -99,7 +117,6 @@ html, body {
   }
 }
 
-
 .logo {
   width: 250px;
   height: auto;
@@ -155,4 +172,71 @@ html, body {
 .nav-btn:hover {
   background: #f0abd6;
   color: black;
+}
+
+
+
+.layout-grid {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 4rem;
+  box-sizing: border-box;
+
+  background-color:#c8e7f5;
+  background-image:
+    linear-gradient(#000 1px, transparent 1px),
+    linear-gradient(90deg, #000 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 -1px;
+}
+
+.description-div {
+  text-align: center;
+  color: white;
+  border: 2px solid white;
+  background: #444;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
+}
+
+.section-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  color: white;
+  border: 2px solid white;
+  background: #555;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
+  max-width: 75%
+}
+
+.subject-btn {
+  display:grid;
+  text-decoration: none;
+  color: white;
+  border: 2px solid white;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  text-align: center;
+  max-width: 300px;
+  transition: background 0.2s, color 0.2s;
+  background: #333;
+}
+
+.subject-btn:hover {
+  background: #f0abd6;
+  color: black;
+}
+
+.development{
+    width: 100%;
+    max-width: 800px;
+    min-width: 400px
 }
