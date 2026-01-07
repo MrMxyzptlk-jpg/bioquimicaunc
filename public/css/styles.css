@@ -407,11 +407,56 @@ html, body {
   cursor: pointer;
 }
 
+.post-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.toggle-comments-btn {
+  align-self: flex-end;
+}
 
 .hidden {
   display: none;
 }
 
+.comments {
+  width: 100%;
+  margin-top: 1rem;
+  border-top: 1px solid #ccc;
+  padding-top: 0.8rem;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment {
+  background: #666;
+  padding: 0.7rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  text-align: left;
+
+  margin-bottom: 0.4rem;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-left: 0.4rem;
+}
+
+.comment-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-right: 0.4rem;
+}
 
 .subject-btn {
   text-decoration: none;
@@ -432,8 +477,6 @@ html, body {
   background: #f0abd6;
   color: #333;
 }
-
-
 
 .layout-development {
   display: flex;
