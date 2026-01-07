@@ -84,6 +84,12 @@
 </body>
 
 <script>
+
+    // MUST DELETE THIS LATER!!
+    const IS_ADMIN = true; // set false for normal users
+    const ADMIN_KEY = 'super-secret-key';
+
+
     const POSTS_API = '/api/posts';
 
     function formatDate(ts) {
@@ -105,6 +111,9 @@
         container.innerHTML = '';
 
         for (const p of posts) {
+            // Skip deleted posts completely
+            if (p.deleted) continue;
+
             const div = document.createElement('div');
             div.className = 'post';
 
@@ -119,18 +128,39 @@
                 <div class="comments hidden"></div>
 
                 <div class="post-actions">
-                <button class="comment-btn">Comentar</button>
-                <button class="toggle-comments-btn hidden">Mostrar comentarios</button>
+                    <button class="toggle-comments-btn hidden">Mostrar comentarios</button>
+                    <button class="delete-post-btn hidden">Eliminar</button>
+                    <button class="comment-btn">Comentar</button>
                 </div>
 
                 <form class="comment-form hidden">
-                <textarea rows="3" placeholder="Escribe un comentario..."></textarea>
-                <div class="comment-actions">
-                    <button type="submit">Enviar</button>
-                    <button type="button" class="cancel-btn">Cancelar</button>
-                </div>
+                    <textarea rows="3" placeholder="Escribe un comentario..."></textarea>
+                    <div class="comment-actions">
+                        <button type="submit">Enviar</button>
+                        <button type="button" class="cancel-btn">Cancelar</button>
+                    </div>
                 </form>
             `;
+
+            const deletePostBtn = div.querySelector('.delete-post-btn');
+
+if (IS_ADMIN) {
+  deletePostBtn.classList.remove('hidden');
+
+  deletePostBtn.addEventListener('click', async () => {
+    if (!confirm('¿Eliminar este post?')) return;
+
+    await fetch(`/api/posts/${p.id}`, {
+      method: 'DELETE',
+      headers: {
+        'X-Admin-Key': ADMIN_KEY
+      }
+    });
+
+    loadPosts();
+  });
+}
+
             
             const commentsDiv = div.querySelector('.comments');
             const commentBtn = div.querySelector('.comment-btn');
@@ -147,24 +177,47 @@
                 toggleCommentsBtn.textContent = `Mostrar comentarios (${comments.length})`;
             }
 
-            comments.forEach(c => {
-                const cDiv = document.createElement('div');
-                cDiv.className = 'comment';
-                cDiv.innerHTML = `
-                    <span class="comment-time">[${formatDate(c.created_at)}]</span>
-                    ${c.content}
-                `;
-                commentsDiv.appendChild(cDiv);
-            });
+comments.forEach(c => {
+  const cDiv = document.createElement('div');
+  cDiv.className = 'comment';
+
+  cDiv.innerHTML = `
+    <span class="comment-time">[${formatDate(c.created_at)}]</span>
+    ${c.deleted ? '[deleted]' : c.content}
+    ${IS_ADMIN ? '<button class="delete-comment-btn">Eliminar</button>' : ''}
+  `;
+
+  if (IS_ADMIN) {
+    const delBtn = cDiv.querySelector('.delete-comment-btn');
+
+    delBtn.addEventListener('click', async () => {
+      if (!confirm('¿Eliminar este comentario?')) return;
+
+      await fetch(`/api/comments/${c.id}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Admin-Key': ADMIN_KEY
+        }
+      });
+
+      cDiv.innerHTML = `
+        <span class="comment-time">[${formatDate(c.created_at)}]</span>
+        [deleted]
+    `;
+    });
+  }
+
+  commentsDiv.appendChild(cDiv);
+});
 
             /* Toggle comment form */
             toggleCommentsBtn.addEventListener('click', () => {
-            commentsDiv.classList.toggle('hidden');
+                commentsDiv.classList.toggle('hidden');
 
-            toggleCommentsBtn.textContent =
-                commentsDiv.classList.contains('hidden')
-                ? `Mostrar comentarios (${comments.length})`
-                : 'Ocultar comentarios';
+                toggleCommentsBtn.textContent =
+                    commentsDiv.classList.contains('hidden')
+                    ? `Mostrar comentarios (${comments.length})`
+                    : 'Ocultar comentarios';
             });
             commentBtn.addEventListener('click', () => {
                 commentForm.classList.remove('hidden');
@@ -181,49 +234,50 @@
 
             /* Submit comment */
             commentForm.addEventListener('submit', async e => {
-  e.preventDefault();
+                e.preventDefault();
 
-  const text = textarea.value.trim();
-  if (!text) return;
+                const text = textarea.value.trim();
+                if (!text) return;
 
-  const res = await fetch('/api/comments', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      content: text,
-      post_id: p.id
-    })
-  });
+                const res = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                    content: text,
+                    post_id: p.id
+                    })
+                });
 
-  const newComment = await res.json();
+                const newComment = await res.json();
 
-  // create comment node
-  const cDiv = document.createElement('div');
-  cDiv.className = 'comment';
-  cDiv.innerHTML = `
-    <span class="comment-time">[${formatDate(newComment.created_at)}]</span>
-    ${newComment.content}
-  `;
+                // create comment node
+                const cDiv = document.createElement('div');
+                cDiv.className = 'comment';
+                cDiv.innerHTML = `
+                    <span class="comment-time">[${formatDate(newComment.created_at)}]</span>
+                    ${newComment.content}
+                `;
 
-  commentsDiv.appendChild(cDiv);
+                commentsDiv.appendChild(cDiv);
 
-  // ensure comments are visible
-  commentsDiv.classList.remove('hidden');
+                // ensure comments are visible
+                commentsDiv.classList.remove('hidden');
 
-  // update counter
-  const count = commentsDiv.children.length;
-  toggleCommentsBtn.classList.remove('hidden');
-  toggleCommentsBtn.textContent = `Ocultar comentarios (${count})`;
+                // update counter
+                const count = commentsDiv.children.length;
+                toggleCommentsBtn.classList.remove('hidden');
+                toggleCommentsBtn.textContent = `Ocultar comentarios (${count})`;
 
-  // reset form UI
-  commentForm.reset();
-  commentForm.classList.add('hidden');
-  commentBtn.classList.remove('hidden');
-});
+                // reset form UI
+                commentForm.reset();
+                commentForm.classList.add('hidden');
+                commentBtn.classList.remove('hidden');
+                });
 
 
             container.appendChild(div);
-        }
+      }
+        
     }
 
     /* Create post */

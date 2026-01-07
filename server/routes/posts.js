@@ -26,4 +26,21 @@ router.post('/', async (req, res) => {
   res.json(result.rows[0]);
 });
 
+// Delete post
+const { ADMIN_KEY } = require('../config');
+router.delete('/:id', async (req, res) => {
+  if (req.headers['x-admin-key'] !== ADMIN_KEY) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const { id } = req.params;
+
+  await pool.query(
+    'UPDATE posts SET deleted = true WHERE id = $1',
+    [id]
+  );
+
+  res.json({ success: true });
+});
+
 module.exports = router;
