@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve frontend
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../docs')));
 
 // API routes
 app.use('/api/comments', commentsRoutes);
