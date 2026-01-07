@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioquimicaunc/Foro</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/menu.js"></script>
+</head>
+<body>
+    
+    <header class="site-header menu-closed">
+
+        <h1 class="header-quote">Foro</h1>
+
+        <div class="menu-logo" id="menuToggle">
+            <img src="assets/logo.jpeg" alt="Bioquímica UNC">
+        </div>
+        <nav class="menu-panel">
+            <a href="intro.html">Introducción</a><br>
+            <a href="foro.html">Foro</a><br>
+            <a href="particulares.html">Particulares</a><br>
+            <a href="recursos.html">Recursos</a><br>
+            <a href="developing.html">Derechos</a><br>
+            <a href="developing.html">Sugerencias</a><br>
+        </nav>
+
+    </header>
+
+    <main class="layout-grid">
+
+        <section class="description-div">
+            <h3>Normas del foro</h3>
+            <p> 
+                Este espacio es para compartir dudas, consejos y experiencias sobre la facultad. Podés crear un nuevo foro según el tema que te interese consultar: materias, finales, cursadas, profesores, organización del estudio, etc. 
+            </p>
+            <p> 
+                Antes de publicar, recordá mantener el respeto, leer las normas y cuidar el clima entre todos. 
+            </p>
+
+            <ul style="text-align:left;">
+                <li>Mantené el respeto: no insultos, ataques personales ni discriminación.</li>
+                <li>Publicá en el espacio correspondiente y con títulos claros.</li>
+                <li>No spam ni publicidad fuera de las secciones habilitadas.</li>
+                <li>No compartas información privada ni contenido ilegal.</li>
+                <li>Opiniones distintas son bienvenidas, manteniendo un trato respetuoso.</li>
+            </ul>
+            <p>
+                El objetivo es ayudarnos y compartir experiencias en un buen clima.
+            </p>
+            <b>Nota: Ciclo básico corresponde a las materias de primer y segundo año.</b>
+        </section>
+
+        <br>
+        <div class="subjects">
+            <a href="developing.html" class="subject-btn">Ciclo Básico</a>
+            <a href="developing.html" class="subject-btn">Bioquímica</a>
+            <a href="developing.html" class="subject-btn">Biotecnología</a>
+            <a href="developing.html" class="subject-btn">Farmacia</a>
+            <a href="developing.html" class="subject-btn">Lic. Química</a>
+        </div>
+        <br>
+
+        <form id="postForm" class="forum-form">
+            <input id="title" placeholder="Título">
+            <textarea id="postContent" rows="4" placeholder="Escribe tu consejo..."></textarea>
+            <button type="submit">Publicar</button>
+        </form>
+<!--
+        <form id="commentForm">
+            <textarea id="commentContent" rows="4" cols="50" placeholder="Escribe un comentario..."></textarea><br>
+            <button type="submit">Publicar</button>
+        </form>
+-->
+        <hr>
+
+        <div id="forum-posts" class="forum-section"></div>
+
+
+
+    </main>
+        
+    <footer class="site-footer">
+    <p class="footer-quote">
+        La educación no es algo que se imparte, sino que se comparte
+    </p>
+    </footer>
+</body>
+
+
+<script>
+    const POSTS_API = '/api/posts';
+
+    async function loadPosts() {
+    const res = await fetch(POSTS_API);
+    const posts = await res.json();
+
+    const container = document.getElementById('forum-posts');
+    container.innerHTML = '';
+
+    posts.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'post';
+
+        div.innerHTML = `
+        <h3>${p.title}</h3>
+        <p>${p.content}</p>
+        
+        <button class="comment-btn">Comentar</button>
+
+        <form class="comment-form hidden">
+            <textarea rows="3" placeholder="Escribe un comentario..."></textarea>
+            <button type="submit">Enviar</button>
+        </form>
+        `;
+
+        const commentBtn = div.querySelector('.comment-btn');
+        const commentForm = div.querySelector('.comment-form');
+
+        commentBtn.addEventListener('click', () => {
+            commentForm.classList.toggle('hidden');
+        });
+
+        commentForm.addEventListener('submit', e => {
+            e.preventDefault();
+            commentForm.reset();
+            commentForm.classList.add('hidden');
+        });
+
+        container.appendChild(div);
+    });
+    }
+
+    document.getElementById('postForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    await fetch(POSTS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        title: document.getElementById('title').value,
+        content: document.getElementById('postContent').value
+        })
+    });
+    document.getElementById('title').value = '';
+    document.getElementById('postContent').value = '';
+
+
+    loadPosts();
+    });
+
+    loadPosts();
+
+
+
+</script>
+
+</html>
