@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Post } from './posts/post.entity';
+import { ForumPost } from './posts/post.entity';
 import { PostsModule } from './posts/posts.module';
 
 @Module({
@@ -24,7 +24,7 @@ import { PostsModule } from './posts/posts.module';
             username: configService.get<string>('DB_USER'),
             password: configService.get<string>('DB_PASSWORD'),
             database: configService.get<string>('DB_NAME'),
-            entities: [Post],
+            entities: [ForumPost],
             synchronize: true,
         }),
     }),
