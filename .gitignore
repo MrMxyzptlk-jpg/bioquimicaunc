@@ -1,25 +1,55 @@
-# CakePHP 3
+# =========================
+# Node / NestJS
+# =========================
+node_modules/
+dist/
+build/
+.nest/
 
-/vendor/*
-/config/app.php
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-/tmp/cache/models/*
-!/tmp/cache/models/empty
-/tmp/cache/persistent/*
-!/tmp/cache/persistent/empty
-/tmp/cache/views/*
-!/tmp/cache/views/empty
-/tmp/sessions/*
-!/tmp/sessions/empty
-/tmp/tests/*
-!/tmp/tests/empty
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
 
-/logs/*
-!/logs/empty
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
 
-# CakePHP 2
+# =========================
+# Docker
+# =========================
+docker-data/
+**/docker-data/
 
-/app/tmp/*
-/app/Config/core.php
-/app/Config/database.php
-/vendors/*
+# =========================
+# Testing
+# =========================
+coverage/
+
+# =========================
+# Database dumps
+# =========================
+*.sql
+*.dump
+*.backup
+
+# =========================
+# Misc
+# =========================
+tmp/
+.cache/
