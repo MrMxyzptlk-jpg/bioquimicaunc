@@ -18,7 +18,8 @@ export class PostsService {
         const forumPost = this.postRepository.create({
             user:data.user,
             title: data.title,
-            content: data.content
+            content: data.content,
+            category: data.category,
         });
         return this.postRepository.save(forumPost)
     }
@@ -44,13 +45,12 @@ export class PostsService {
 
     // Filter by category
     async findByCategory(category: string): Promise<ForumPost[]> {
-        const qb = this.postRepository
-            .createQueryBuilder('post')
-            .leftJoinAndSelect('post.category', 'category')
-            .where('category.name = :category', { category })
-            .orderBy('post.createdAt', 'DESC');
+        if (!category) return [];
 
-        return qb.getMany();
+        return this.postRepository.find({
+            where: { category: category },
+            order: { createdAt: 'DESC' }
+        });
     }
 
 }

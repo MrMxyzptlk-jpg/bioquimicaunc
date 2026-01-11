@@ -14,6 +14,9 @@ export class ForumPost {
     @Column({ type: 'text' })
     content: string
 
+    @Column()
+    category: string
+
     @CreateDateColumn()
     createdAt: Date;
 

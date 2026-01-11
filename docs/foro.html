@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bioquimicaunc/Foro</title>
     <link rel="stylesheet" href="./css/styles.css">
-    <script src="./js/menu.js"></script>
+    <script src="./js/forum.js" defer></script>
 </head>
 <body>
-    
+
     <header class="site-header menu-closed">
 
         <h1 class="header-quote">Foro</h1>
@@ -32,11 +32,11 @@
 
         <section class="description-div">
             <h2>Normas del foro</h2>
-            <p> 
-                Este espacio es para compartir dudas, consejos y experiencias sobre la facultad. Podés crear un nuevo foro según el tema que te interese consultar: materias, finales, cursadas, profesores, organización del estudio, etc. 
+            <p>
+                Este espacio es para compartir dudas, consejos y experiencias sobre la facultad. Podés crear un nuevo foro según el tema que te interese consultar: materias, finales, cursadas, profesores, organización del estudio, etc.
             </p>
-            <p> 
-                Antes de publicar, recordá mantener el respeto, leer las normas y cuidar el clima entre todos. 
+            <p>
+                Antes de publicar, recordá mantener el respeto, leer las normas y cuidar el clima entre todos.
             </p>
 
             <ul style="text-align:left;">
@@ -54,11 +54,11 @@
 
         <br>
         <div class="subjects">
-            <a href="developing.html" class="subject-btn">Ciclo Básico</a>
-            <a href="developing.html" class="subject-btn">Bioquímica</a>
-            <a href="developing.html" class="subject-btn">Biotecnología</a>
-            <a href="developing.html" class="subject-btn">Farmacia</a>
-            <a href="developing.html" class="subject-btn">Lic. Química</a>
+            <button class="subject-btn" onclick="loadPosts('Ciclo Básico')"> Ciclo Básico</button>
+            <button class="subject-btn" onclick="loadPosts('Bioquímica')"> Bioquímica </button>
+            <button class="subject-btn" onclick="loadPosts('Biotecnología')"> Biotecnología </button>
+            <button class="subject-btn" onclick="loadPosts('Farmacia')"> Farmacia </button>
+            <button class="subject-btn" onclick="loadPosts('Lic. Química')"> Lic. Química </button>
         </div>
         <br>
 
@@ -75,233 +75,12 @@
 
 
     </main>
-        
+
     <footer class="site-footer">
     <p class="footer-quote">
         La educación no es algo que se imparte, sino que se comparte
     </p>
     </footer>
 </body>
-
-<script>
-
-    // MUST DELETE THIS LATER!!
-    const IS_ADMIN = true; // set false for normal users
-    const ADMIN_KEY = 'super-secret-key';
-
-
-    const POSTS_API = '/api/posts';
-
-    function formatDate(ts) {
-        const d = new Date(ts);
-        return d.toLocaleString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-
-    async function loadPosts() {
-        const res = await fetch(POSTS_API);
-        const posts = await res.json();
-
-        const container = document.getElementById('forum-posts');
-        container.innerHTML = '';
-
-        for (const p of posts) {
-            // Skip deleted posts completely
-            if (p.deleted) continue;
-
-            const div = document.createElement('div');
-            div.className = 'post';
-
-            div.innerHTML = `
-                <h3>
-                    ${p.title}
-                    <span class="timestamp">[${formatDate(p.created_at)}]</span>
-                </h3>
-
-                <p>${p.content}</p>
-
-                <div class="comments hidden"></div>
-
-                <div class="post-actions">
-                    <button class="toggle-comments-btn hidden">Mostrar comentarios</button>
-                    <button class="delete-post-btn hidden">Eliminar</button>
-                    <button class="comment-btn">Comentar</button>
-                </div>
-
-                <form class="comment-form hidden">
-                    <textarea rows="3" placeholder="Escribe un comentario..."></textarea>
-                    <div class="comment-actions">
-                        <button type="submit">Enviar</button>
-                        <button type="button" class="cancel-btn">Cancelar</button>
-                    </div>
-                </form>
-            `;
-
-            const deletePostBtn = div.querySelector('.delete-post-btn');
-
-if (IS_ADMIN) {
-  deletePostBtn.classList.remove('hidden');
-
-  deletePostBtn.addEventListener('click', async () => {
-    if (!confirm('¿Eliminar este post?')) return;
-
-    await fetch(`/api/posts/${p.id}`, {
-      method: 'DELETE',
-      headers: {
-        'X-Admin-Key': ADMIN_KEY
-      }
-    });
-
-    loadPosts();
-  });
-}
-
-            
-            const commentsDiv = div.querySelector('.comments');
-            const commentBtn = div.querySelector('.comment-btn');
-            const commentForm = div.querySelector('.comment-form');
-            const textarea = commentForm.querySelector('textarea');
-
-            const toggleCommentsBtn = div.querySelector('.toggle-comments-btn');
-
-            const cRes = await fetch(`/api/comments/${p.id}`);
-            const comments = await cRes.json();
-
-            if (comments.length > 0) {
-                toggleCommentsBtn.classList.remove('hidden');
-                toggleCommentsBtn.textContent = `Mostrar comentarios (${comments.length})`;
-            }
-
-comments.forEach(c => {
-  const cDiv = document.createElement('div');
-  cDiv.className = 'comment';
-
-  cDiv.innerHTML = `
-    <span class="comment-time">[${formatDate(c.created_at)}]</span>
-    ${c.deleted ? '[deleted]' : c.content}
-    ${IS_ADMIN ? '<button class="delete-comment-btn">Eliminar</button>' : ''}
-  `;
-
-  if (IS_ADMIN) {
-    const delBtn = cDiv.querySelector('.delete-comment-btn');
-
-    delBtn.addEventListener('click', async () => {
-      if (!confirm('¿Eliminar este comentario?')) return;
-
-      await fetch(`/api/comments/${c.id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-Admin-Key': ADMIN_KEY
-        }
-      });
-
-      cDiv.innerHTML = `
-        <span class="comment-time">[${formatDate(c.created_at)}]</span>
-        [deleted]
-    `;
-    });
-  }
-
-  commentsDiv.appendChild(cDiv);
-});
-
-            /* Toggle comment form */
-            toggleCommentsBtn.addEventListener('click', () => {
-                commentsDiv.classList.toggle('hidden');
-
-                toggleCommentsBtn.textContent =
-                    commentsDiv.classList.contains('hidden')
-                    ? `Mostrar comentarios (${comments.length})`
-                    : 'Ocultar comentarios';
-            });
-            commentBtn.addEventListener('click', () => {
-                commentForm.classList.remove('hidden');
-                commentBtn.classList.add('hidden');
-            });
-            const cancelBtn = div.querySelector('.cancel-btn');
-
-            cancelBtn.addEventListener('click', () => {
-                commentForm.reset();
-                commentForm.classList.add('hidden');
-                commentBtn.classList.remove('hidden');
-            });
-
-
-            /* Submit comment */
-            commentForm.addEventListener('submit', async e => {
-                e.preventDefault();
-
-                const text = textarea.value.trim();
-                if (!text) return;
-
-                const res = await fetch('/api/comments', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                    content: text,
-                    post_id: p.id
-                    })
-                });
-
-                const newComment = await res.json();
-
-                // create comment node
-                const cDiv = document.createElement('div');
-                cDiv.className = 'comment';
-                cDiv.innerHTML = `
-                    <span class="comment-time">[${formatDate(newComment.created_at)}]</span>
-                    ${newComment.content}
-                `;
-
-                commentsDiv.appendChild(cDiv);
-
-                // ensure comments are visible
-                commentsDiv.classList.remove('hidden');
-
-                // update counter
-                const count = commentsDiv.children.length;
-                toggleCommentsBtn.classList.remove('hidden');
-                toggleCommentsBtn.textContent = `Ocultar comentarios (${count})`;
-
-                // reset form UI
-                commentForm.reset();
-                commentForm.classList.add('hidden');
-                commentBtn.classList.remove('hidden');
-                });
-
-
-            container.appendChild(div);
-      }
-        
-    }
-
-    /* Create post */
-    document.getElementById('postForm').addEventListener('submit', async e => {
-        e.preventDefault();
-
-        await fetch(POSTS_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            title: document.getElementById('title').value,
-            content: document.getElementById('postContent').value
-            })
-        });
-
-        document.getElementById('title').value = '';
-        document.getElementById('postContent').value = '';
-
-        loadPosts();
-    });
-
-    loadPosts();
-
-</script>
-
 
 </html>
