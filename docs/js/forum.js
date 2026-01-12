@@ -1,12 +1,12 @@
-// CONFIGURATION
-const API_URL = 'http://localhost:3000/posts';
-const CURRENT_USER = "Estudiante_UNC"; // Hardcoded user to satisfy DB constraint
+import { CURRENT_USER } from './config.js';
+import { createPost, getPosts, updatePost, removePost } from './posts.js';
+import { createComment, getComments, updateComment, removeComment } from './comments.js';
 
 // DOM ELEMENTS
-const postsContainer = document.getElementById('forum-posts');
+const form = document.getElementById('postForm');
 const titleInput = document.getElementById('title');
 const contentInput = document.getElementById('postContent');
-const form = document.getElementById('postForm');
+const postsContainer = document.getElementById('forum-posts');
 
 // STATE
 let currentCategory = null;
@@ -14,24 +14,13 @@ let currentCategory = null;
 // --------------------
 // Load posts
 // --------------------
-async function loadPosts(category) {
+export async function loadPosts(category) {
     currentCategory = category;
 
-    // Clear current list to show user something is happening
-    postsContainer.innerHTML = '<p class="alert">Cargando...</p>';
+    postsContainer.innerHTML = '<p class="alert">Cargando...</p>';  // Clear current list to show user something is happening
 
-    try {
-        const res = await fetch(`${API_URL}?category=${category}`);
-        const posts = await res.json();
-
-        renderPosts(posts);
-
-        // Update the form placeholder to show user where they are posting
-        titleInput.placeholder = `Título (Publicando en ${category})`;
-    } catch(error) {
-        console.error(error);
-        postsContainer.innerHTML = '<p class="alert"> Error cargando posts. </p>';
-    }
+    const posts = await getPosts(category);
+    renderPosts(posts);
 }
 
 // --------------------
@@ -51,7 +40,10 @@ function renderPosts(posts) {
             <h2> ${post.title} </h2>
             <small> Por: ${post.user} | Fecha: ${new Date(post.createdAt).toLocaleDateString()}</small>
             <p> ${post.content} </p>
-            <button onclick="remove(${post.id}" calss="delte-btn"> Eliminar </button>
+            <div class="post-actions">
+                <button onclick="updatePost(${post.id})" class="edit-btn"> Editar </button>
+                <button onclick="removePost(${post.id})" class="comment-btn"> Eliminar </button>
+            </div>
         </div>
         <hr>
     `).join('');
@@ -70,31 +62,35 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
-    const title = titleInput.value;
-    const content = contentInput.value;
-
-    await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            title: title,
-            content: content,
-            user: CURRENT_USER,
-            category: currentCategory
-        })
+    await createPost({
+        user: CURRENT_USER,
+        title: titleInput.value,
+        content: contentInput.value,
+        category: currentCategory
     });
 
-    titleInput.value = '';
-    contentInput.value = '';
+    form.reset();
     loadPosts(currentCategory);
 });
 
 // --------------------
 // Delete
 // --------------------
-async function remove(id) {
-    if(!confirm("¿Borrar post?")) return;
+window.removePost = async function(id) {
+    if (!confirm("¿Borrar post?")) return;
 
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    loadPosts(currentCategory);
-}
+    try {
+        await removePost(id);
+        loadPosts(currentCategory);
+    } catch (e) {
+        alert("Error eliminando el post");
+        console.error(e);
+    }
+};
+
+document.querySelectorAll('.subject-btn').forEach(btn =>{
+    btn.addEventListener('click', () => {
+        const category = btn.dataset.category;
+        loadPosts(category);
+    });
+});
