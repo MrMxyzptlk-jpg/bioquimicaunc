@@ -502,12 +502,6 @@ button:hover{
   color: #333;
 }
 
-.delete-btn {
-    background:#ff5858;
-    border:none;
-    padding:5px;
-}
-
 .layout-development {
   display: flex;
   flex-direction: column;

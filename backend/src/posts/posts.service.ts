@@ -16,7 +16,7 @@ export class PostsService {
     // Create a Post
     async create(data: CreatePostDto): Promise<ForumPost> {
         const forumPost = this.postRepository.create({
-            user:data.user,
+            user: data.user,
             title: data.title,
             content: data.content,
             category: data.category,

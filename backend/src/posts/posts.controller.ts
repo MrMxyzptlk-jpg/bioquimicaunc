@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode } from '@nestjs/common';
 
 import { PostsService } from './posts.service';
 import { ForumPost } from './post.entity';
@@ -26,7 +26,8 @@ export class PostsController {
     }
 
     @Delete(':id')
-    delete(@Param(':id', ParseIntPipe) id: number ) {
+    @HttpCode(204)
+    delete(@Param('id', ParseIntPipe) id: number ) {
         return this.postsService.remove(id);
     }
 

@@ -23,8 +23,78 @@ export async function loadPosts(category) {
     renderPosts(posts);
 }
 
+
 // --------------------
-// Render posts HTML
+// Set Up Comments
+// --------------------
+async function setupComments(postDiv, postId) {
+    const toggleBtn = postDiv.querySelector('.comment-toggle');
+    const commentsDiv = postDiv.querySelector('.comments');
+    const form = postDiv.querySelector('.comment-form');
+    const textarea = form.querySelector('textarea');
+
+    let loaded = false;
+
+    toggleBtn.addEventListener('click', async () => {
+        if (!loaded) {
+            const comments = await getComments(postId);
+            renderComments(commentsDiv, comments);
+            loaded = true;
+        }
+
+        commentsDiv.classList.toggle('hidden');
+        form.classList.toggle('hidden');
+
+        toggleBtn.textContent =
+            commentsDiv.classList.contains('hidden')
+                ? 'Mostrar comentarios'
+                : 'Ocultar comentarios';
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!textarea.value.trim()) return;
+
+        const comment = await createComment(postId, {
+            user: CURRENT_USER,
+            content:textarea.value
+        });
+
+    appendComment(commentsDiv, comment);
+    textarea.value = '';
+    });
+}
+
+function setupCommentActions(commentDiv, comment) {
+    const editBtn = commentDiv.querySelector('.comment-edit');
+    const deleteBtn = commentDiv.querySelector('.comment-delete');
+    const contentSpan = commentDiv.querySelector('.comment-content');
+
+    //Edit
+    if (editBtn) {
+        editBtn.addEventListener('click', async () => {
+            const newContent = prompt('Editar comentario:', comment.content);
+            if (!newContent || newContent === comment.content) return;
+
+            const update = await updateContent(comment.id, { content: newContent });
+        });
+    }
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async () => {
+            if (!confirm('¿Eliminar comentario?')) return;
+
+            await removeComment(comment.id);
+
+            contentSpan.textContent = '[deleted]';
+            editBtn?.remove();
+            deleteBtn?.remove();
+        });
+    }
+}
+
+// --------------------
+// Render posts/comments HTML
 // --------------------
 function renderPosts(posts) {
     postsContainer.innerHTML = '';
@@ -34,21 +104,70 @@ function renderPosts(posts) {
         return;
     }
 
-    // Map the array of objects to HTML strings
-    const html = posts.map(post => `
-        <div class="post">
-            <h2> ${post.title} </h2>
-            <small> Por: ${post.user} | Fecha: ${new Date(post.createdAt).toLocaleDateString()}</small>
-            <p> ${post.content} </p>
-            <div class="post-actions">
-                <button onclick="updatePost(${post.id})" class="edit-btn"> Editar </button>
-                <button onclick="removePost(${post.id})" class="comment-btn"> Eliminar </button>
-            </div>
-        </div>
-        <hr>
-    `).join('');
+    posts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
 
-    postsContainer.innerHTML = html;
+        postDiv.innerHTML = `
+            <h2>${post.title}</h2>
+            <small>
+                Por: ${post.user} |
+                Fecha ${new Date(post.createdAt).toLocaleDateString()}
+            </small>
+            <p> ${post.content} </p>
+
+            <div class="post-actions">
+                <button onclick="commentPost(${post.id})"> Editar </button>
+                <button onclick="removePost(${post.id})"> Eliminar </button>
+                <button class="comment-toggle"> Mostrar comentarios </button>
+            </div>
+
+            <div class="comments hidden"></div>
+
+            <button id="comment-btn"> Comentar </button>
+            <form class="comment-form hidden">
+                <textarea rows="2" placeholder="Escribe un comentario..."></textarea>
+                <button type="submit"> Enviar </button>
+            </form>
+        `;
+
+        setupComments(postDiv, post.id);
+        postsContainer.appendChild(postDiv);
+    });
+}
+
+async function renderComments(container, comments) {
+    container.innerHTML = '';
+
+    if (comments.length === 0) {
+        container.innerHTML = '<p class="muted"> No hay comentarios. </p>';
+        return;
+    }
+
+    comments.forEach(comment => appendComment(container, comment));
+}
+
+function appendComment(container, comment) {
+    const div = document.createElement('div');
+    div.className = 'comment';
+
+    const isOwner = comment.user === CURRENT_USER;
+
+    div.innerHTML = `
+        <span class="comment-user">${comment.user}</span>:
+        <span class="comment-content">
+            ${comment.deleted ? '[deleted]' : comment.content}
+        </span>
+
+        ${isOwner && !comment.deleted ? `
+            <button class="comment-edit"> Editar </button>
+            <button class="comment-delete"> Eliminar </button>`
+        : ''}
+    `;
+
+
+    setupCommentActions(div, comment);
+    container.appendChild(div);
 }
 
 // --------------------
