@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Comment } from './comments/entities/comment.entity';
 import { ForumPost } from './posts/post.entity';
 import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -29,12 +31,14 @@ import { PostsModule } from './posts/posts.module';
             username: configService.get<string>('DB_USER'),
             password: configService.get<string>('DB_PASSWORD'),
             database: configService.get<string>('DB_NAME'),
-            entities: [ForumPost],
+            entities: [ForumPost, Comment],
             synchronize: true,
         }),
     }),
 
     PostsModule,
+
+    CommentsModule,
   ],
   controllers: [],
   providers: [],

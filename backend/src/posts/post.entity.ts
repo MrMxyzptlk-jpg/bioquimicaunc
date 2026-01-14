@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Entity } from "typeorm";
+import { PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Entity, OneToMany } from "typeorm";
+import {Comment} from '../comments/entities/comment.entity';
 
 @Entity()
 export class ForumPost {
@@ -22,4 +23,7 @@ export class ForumPost {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => Comment, (comment) => comment.post)
+    comments: Comment[];
 }
