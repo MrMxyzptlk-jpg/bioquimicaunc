@@ -55,7 +55,7 @@ export class PostsController {
         return `
             <div class="post" id="post-${post.id}">
                 <h2> ${post.title} </h2>
-                <small> Por: ${post.user} | Fech: ${new Date(post.createdAt).toLocaleDateString()} </small>
+                <small> ${post.user} | ${new Date(post.createdAt).toLocaleDateString()} </small>
                 <p> ${post.content} </p>
 
                 <div class="post-actions">
@@ -68,8 +68,31 @@ export class PostsController {
                         Eliminar
                     </button>
                 </div>
+
+                <hr>
+                <h5> Comentarios </h5>
+
+                <div id="comments-list-${post.id}" class="comments-section"></div>
+
+                <form
+                    hx-post="/comments"
+                    hx-target="#comments-list-${post.id}"
+                    hx-swap="beforeend"
+                    hx-on::htmx:after-request="this.reset()"
+                    class="comment-form"
+                    style="margin-top: 10px;">
+
+                    <input type="hidden" name="postId" value="${post.id}">
+                    <input type="hidden" name="user" value="${post.user}">
+
+                    <div style=display: flex; gap: 5px;">
+
+                        <input type="text" name="content" placeholder="Escribe un comentario..." required style="flex: 1;">
+
+                        <button type="submit" class="comment-btn"> Enviar </button>
+                    </div>
+                </form>
             </div>
-            <hr id="hr-${post.id}">
         `
     }
 

@@ -11,7 +11,11 @@ export class CommentsController {
   @Header('Content-Type', 'text/html')
   async create(@Body() createCommentDto: CreateCommentDto) {
     const newComment = await this.commentsService.create(createCommentDto);
-    return this.renderCommentTree(newComment, [], newComment.parent ? 1 : 0);
+    return `
+        <div class="alert alert-secondary p-2 mb-2" id="comment-${newComment.id}">
+            <strong> ${newComment.user}: </strong> ${newComment.content}
+        </div>
+    `
   }
 
   @Get('post/:postId')
@@ -19,53 +23,24 @@ export class CommentsController {
   async findByPost(@Param('postId') postId: string) {
     const allComments = await this.commentsService.findByPost(+postId);
     const rootComments = allComments.filter(c => !c.parent); // Filter to find only root comments
-    const listHtml = rootComments.map(c => this.renderCommentTree(c, allComments)).join('');
-    return `
-        <div class="comments-section" style="margin-top: 20px, padding:10px; background: #000;">
-            <h3> Comentarios </h3>
-            <div class="comments-list">
-                ${listHtml || '<p> No hay comentarios aún </p>'}
-            </div>
-        </div
-    `;
+
+    if (rootComments.length === 0 ) return '';
+
+    return rootComments.map(c => this.renderCommentTree(c, allComments)).join('');
   }
 
   private renderCommentTree(comment: any, allComments: any[], level = 0) {
-    const children = allComments.filter(c => c.parrent && comment.parent.id === comment.id); // all children from this comment
+    const children = allComments.filter(c => c.parent && comment.parent.id === comment.id); // all children from this comment
 
     const marginLeft = level * 20; // level-based indent
 
     return `
-        <div class="comment-wrapper" id="comment-${comment.id}" style="margin-left:${marginLeft}px; border-left: 2px solid #ddd; padding-left: 10px; margin-bottom: 10px;"
-            <div class="comment-content">
-                <strong> ${comment.user} </strong> <small> ${new Date(comment.createdAt).toLocaleDateString()}</small>
-                <p style="margin: 5px 0;"> ${comment.content} </p>
-
-                <button class="btn-sm"
-                    style="font-size: 0.8rem; cursor: pointer; color: blue; border: none; background: #000;"
-                    onclick="document.getElementById('reply-form-${comment.id}).style.display = 'flex'">
-                    Responder
-                </button>
-            <div>
-
-            <div id="reply-form=${comment.id}" style="display:none; margin-top: 5px;">
-                <form hx-post="/comments"
-                    hx-target="#children-container-${comment.id}"
-                    hx-swap="beforeend"
-                    hx-on::after-request="this.reset(); this.parentElement.style.display='none'">
-
-                    <input type="hidden" name="postId" value="${comment.post.id}">
-                    <input type="hidden" name="parentId" value="${comment.id}">
-                    <input type="hidden" name="user" value="User">
-
-                    <input type="text" name="content" placeholder="Responder..." required style="width: 70%;">
-                    <button type="button" onclick="this.parentElement.parentElement.style.display = 'none' "> X </button>
-                </form>
+        <div class="comment-wrapper" style="margin-left: ${marginLeft}px; margin-bottom: 5px;">
+            <div class="alert alert-secondary p-2 mb-2">
+                <strong> ${comment.user} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
             </div>
-
-            <div id="children-container-${comment.id}">
-                ${children.map(child => this.renderCommentTree(child, allComments, level + 1)).join('')}
-            </div>
+            ${children.map(child => this.renderCommentTree(child, allComments, level + 1)).join('')}
+        </div>
     `;
   }
 
