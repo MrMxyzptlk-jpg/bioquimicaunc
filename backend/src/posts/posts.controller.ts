@@ -38,6 +38,24 @@ export class PostsController {
         return posts.map(post => this.renderPostCard(post)).join('');
     }
 
+    @Get(':id/comments-button')
+    getCommentsButton(@Param('id') id: string) {
+        return this.renderShowButton(+id);
+    }
+
+    // Helper method for the button HTML
+    private renderShowButton(postId: number) {
+        return `
+            <button
+                hx-get="/comments/post/${postId}"
+                hx-target="#comments-list-${postId}"
+                hx-swap="innerHTML"
+                class="margin-bottom: 10px;">
+                Ver Comentarios
+            </button>
+        `
+    }
+
     @Put(':id')
     update( @Param('id', ParseIntPipe) id: number, @Body() body: UpdatePostDto) {
         return this.postsService.update(id, body);
@@ -64,28 +82,28 @@ export class PostsController {
                         hx-target="#post-${post.id}"
                         hx-swap="outerHTML"
                         hx-confirm="¿Borrar post?"
-                        class="delete-btn">
+                        class="post-action-btn">
                         Eliminar
                     </button>
                 </div>
 
                 <hr>
-                <h5> Comentarios </h5>
 
-                <div id="comments-list-${post.id}" class="comments-section"></div>
+                <div id="comments-list-${post.id}" class="comments-section">
+                    ${this.renderShowButton(post.id)}
+                </div>
 
                 <form
                     hx-post="/comments"
                     hx-target="#comments-list-${post.id}"
                     hx-swap="beforeend"
-                    hx-on::htmx:after-request="this.reset()"
-                    class="comment-form"
-                    style="margin-top: 10px;">
+                    hx-on::after-request="this.reset()"
+                    class="comment-form">
 
                     <input type="hidden" name="postId" value="${post.id}">
                     <input type="hidden" name="user" value="${post.user}">
 
-                    <div style=display: flex; gap: 5px;">
+                    <div style="display: flex; gap: 5px;">
 
                         <input type="text" name="content" placeholder="Escribe un comentario..." required style="flex: 1;">
 

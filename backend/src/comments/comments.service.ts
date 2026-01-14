@@ -40,7 +40,7 @@ export class CommentsService {
   async findByPost(postId:number) {
     return this.commentsRepo.find({
         where: { post: { id: postId } },
-        relations: ['parent', 'children'],
+        relations: ['parent', 'children', 'post'],
         order: { createdAt: 'ASC' }
     });
   }
