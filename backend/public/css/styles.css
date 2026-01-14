@@ -357,42 +357,52 @@ html, body {
 
 .forum-form input,
 .forum-form textarea {
-  width: 95%;
-  padding: 0.7rem;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: none;
+    width: 95%;
+    padding: 0.7rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: none;
 }
 
 .forum-form textarea {
-  resize: vertical;
+    resize: vertical;
 }
 
 .forum-form button {
-  align-self: center;
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
+    align-self: center;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.signal{
+    text-align: center;
+    background: #444;
+    border: 2px solid white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 5px 5px 15px 5px #00677b;
+    max-width:300px;
 }
 
 .subjects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  justify-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
 
-  width: 100%;
-  max-width: none; /* ← THIS is the key */
+    width: 100%;
+    max-width: none; /* ← THIS is the key */
 }
 
 .comment-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 1rem;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+    gap: 1rem;
 }
 
 .comment-form textarea {

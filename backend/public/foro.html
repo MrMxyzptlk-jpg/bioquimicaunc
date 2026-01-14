@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioquimicaunc/Foro</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <!--<script type="module" src="js/forum.js"></script>-->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+
+    <header class="site-header menu-closed">
+
+        <h1 class="header-quote">Foro</h1>
+
+        <div class="menu-logo" id="menuToggle">
+            <img src="assets/logo.jpeg" alt="Bioquímica UNC">
+        </div>
+        <nav class="menu-panel">
+            <a href="index.html">Main</a><br>
+            <a href="intro.html">Introducción</a><br>
+            <a href="foro.html">Foro</a><br>
+            <a href="particulares.html">Particulares</a><br>
+            <a href="recursos.html">Recursos</a><br>
+            <a href="developing.html">Derechos</a><br>
+            <a href="developing.html">Sugerencias</a><br>
+        </nav>
+
+    </header>
+
+    <main class="layout-grid">
+
+        <section class="description-div">
+            <h2>Normas del foro</h2>
+            <p>
+                Este espacio es para compartir dudas, consejos y experiencias sobre la facultad. Podés crear un nuevo foro según el tema que te interese consultar: materias, finales, cursadas, profesores, organización del estudio, etc.
+            </p>
+            <p>
+                Antes de publicar, recordá mantener el respeto, leer las normas y cuidar el clima entre todos.
+            </p>
+
+            <ul style="text-align:left;">
+                <li>Mantené el respeto: no insultos, ataques personales ni discriminación.</li>
+                <li>Publicá en el espacio correspondiente y con títulos claros.</li>
+                <li>No spam ni publicidad fuera de las secciones habilitadas.</li>
+                <li>No compartas información privada ni contenido ilegal.</li>
+                <li>Opiniones distintas son bienvenidas, manteniendo un trato respetuoso.</li>
+            </ul>
+            <p>
+                El objetivo es ayudarnos y compartir experiencias en un buen clima.
+            </p>
+            <b>Nota: Ciclo básico corresponde a las materias de primer y segundo año.</b>
+        </section>
+
+        <br>
+        <div class="subjects">
+            <button class="subject-btn"
+                hx-get="/posts/fragments?category=Ciclo Basico"
+                hx-target="#forum-posts"
+                hx-swap="innerHTML"
+                onclick="setCategory('Ciclo Basico')"> Ciclo Básico</button>
+            <button class="subject-btn"
+                hx-get="/posts/fragments?category=Bioquimica"
+                hx-target="#forum-posts"
+                hx-swap="innerHTML"
+                onclick="setCategory('Bioquimica')"> Bioquímica </button>
+            <button class="subject-btn"
+                hx-get="/posts/fragments?category=Biotecnologia"
+                hx-target="#forum-posts"
+                hx-swap="innerHTML"
+                onclick="setCategory('Biotecnologia')"> Biotecnología </button>
+            <button class="subject-btn"
+                hx-get="/posts/fragments?category=Farmacia"
+                hx-target="#forum-posts"
+                hx-swap="innerHTML"
+                onclick="setCategory('Farmacia')"> Farmacia </button>
+            <button class="subject-btn"
+                hx-get="/posts/fragments?category=Lic Quimica"
+                hx-target="#forum-posts"
+                hx-swap="innerHTML"
+                onclick="setCategory('Lic Quimica')"> Lic. Química </button>
+        </div>
+        <br>
+
+        <form id="postForm" class="forum-form" style="display: none;"
+            hx-post="/posts"
+            hx-target="#forum-posts"
+            hx-swap="afterbegin"
+            hx-on::after-request="this.reset(); document.querySelectorAll('#forum-posts .alert, #forum-posts .muted').forEach(el => el.remove());">
+
+            <input type="hidden" name="user" value="ESTUDIANDE_UNC">
+            <input type="hidden" id="categoryInput" name="category" value="Ciclo Basico">
+
+            <input type="text" id="title" name="title" placeholder="Título" required>
+            <textarea name="content" id="postContent" rows="4" placeholder="Escribe tu consejo..." required></textarea>
+            <button type="submit"> Publicar </button>
+        </form>
+
+        <hr>
+
+        <div id="forum-posts" class="forum-section">
+            <p class="signal"> Selecciona una categoría. </p>
+        </div>
+
+
+
+    </main>
+
+    <footer class="site-footer">
+    <p class="footer-quote">
+        La educación no es algo que se imparte, sino que se comparte
+    </p>
+    </footer>
+
+    <script>
+        function setCategory(cat) {
+            document.getElementById('categoryInput').value = cat;
+            document.getElementById('title').placeholder = `Titulo (Publicado en ${cat})`;
+            document.getElementById('postForm').style.display = 'flex';
+            document.getElementById('title').focus();
+        }
+    </script>
+</body>
+
+</html>

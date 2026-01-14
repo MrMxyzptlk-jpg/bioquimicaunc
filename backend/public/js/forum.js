@@ -19,8 +19,8 @@ export async function loadPosts(category) {
 
     postsContainer.innerHTML = '<p class="alert">Cargando...</p>';  // Clear current list to show user something is happening
 
-    const posts = await getPosts(category);
-    renderPosts(posts);
+    //const posts = await getPosts(category);
+    //renderPosts(posts);
 }
 
 
@@ -189,7 +189,7 @@ form.addEventListener('submit', async (e) => {
     });
 
     form.reset();
-    loadPosts(currentCategory);
+    //loadPosts(currentCategory);
 });
 
 // --------------------
@@ -200,16 +200,9 @@ window.removePost = async function(id) {
 
     try {
         await removePost(id);
-        loadPosts(currentCategory);
+        //loadPosts(currentCategory);
     } catch (e) {
         alert("Error eliminando el post");
         console.error(e);
     }
 };
-
-document.querySelectorAll('.subject-btn').forEach(btn =>{
-    btn.addEventListener('click', () => {
-        const category = btn.dataset.category;
-        loadPosts(category);
-    });
-});
