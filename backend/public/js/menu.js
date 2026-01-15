@@ -8,13 +8,12 @@ function loadHeader(pageTitle) {
                 <img src="assets/logo.jpeg" alt="Bioquímica UNC">
             </div>
             <nav class="menu-panel">
-                <a href="index.html">Main</a><br>
-                <a href="intro.html">Introducción</a><br>
-                <a href="foro.html">Foro</a><br>
-                <a href="particulares.html">Particulares</a><br>
-                <a href="recursos.html">Recursos</a><br>
-                <a href="developing.html">Derechos</a><br>
-                <a href="developing.html">Sugerencias</a><br>
+                <a href="index.html"> Inicio </a><br>
+                <a href="intro.html"> Introducción </a><br>
+                <a href="foro.html"> Foro </a><br>
+                <a href="particulares.html"> Particulares </a><br>
+                <a href="recursos.html"> Recursos </a><br>
+                <a href="developing.html"> Derechos </a><br>
             </nav>
 
         </header>
