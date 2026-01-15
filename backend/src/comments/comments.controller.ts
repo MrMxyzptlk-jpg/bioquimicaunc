@@ -38,10 +38,10 @@ export class CommentsController {
   private renderCommentTree(comment: any, allComments: any[], level = 0) {
     const children = allComments.filter(c => c.parent && c.parent.id === comment.id); // all children from this comment
 
-    const marginLeft = level * 10; // level-based indent
+    const paddingLeft = level * 10; // level-based indent
 
     return `
-        <div class="comment-wrapper" style="margin-left: ${marginLeft}px;">
+        <div class="comment-wrapper" style="padding-left: ${paddingLeft}px;">
             <div class="comment-content">
                 <strong> ${comment.user} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
             </div>

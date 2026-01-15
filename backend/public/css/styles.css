@@ -425,7 +425,7 @@ html, body {
 
 .post-actions {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    /*grid-template-columns: 1fr auto 1fr;*/
     align-items: center;
     margin-top: 0.5rem;
     gap: 4rex;
@@ -502,7 +502,7 @@ button:hover{
 }
 
 .comments-section {
-    width: 90%;
+    width: 100%;
     margin-top: 1rem;
 }
 
@@ -608,6 +608,8 @@ details summary {
     opacity: 0.8;
     padding: 8px;
     text-align: right;
+    padding-left: 0;
+    margin-left: 0;
 }
 
 details summary:hover {
