@@ -2,9 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { ForumPost } from './post.entity';
+
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -14,12 +16,12 @@ export class PostsService {
     ){}
 
     // Create a Post
-    async create(data: CreatePostDto): Promise<ForumPost> {
+    async create(data: CreatePostDto, user: User): Promise<ForumPost> {
         const forumPost = this.postRepository.create({
-            user: data.user,
             title: data.title,
             content: data.content,
             category: data.category,
+            author: user,
         });
         return this.postRepository.save(forumPost)
     }
@@ -49,6 +51,7 @@ export class PostsService {
 
         return this.postRepository.find({
             where: { category: category },
+            relations: ['author'],
             order: { createdAt: 'DESC' }
         });
     }

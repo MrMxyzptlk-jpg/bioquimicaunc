@@ -1,21 +1,38 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { PostsService } from './posts.service';
 import { ForumPost } from './post.entity';
-
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
+import { User } from '../users/entities/user.entity';
+
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postsService: PostsService) {}
+    constructor(
+        private readonly postsService: PostsService,
+        @InjectRepository(User)
+        private readonly usersRepo: Repository<User>
+    ) {}
 
     // 1. Create Post (HTMX Style)
     // Returns a single HTML card to append to the list
     @Post()
     @Header('Content-Type', 'text/html')
-    async create(@Body() body: CreatePostDto) {
-        const post = await this.postsService.create(body);
+    async create(@Body() body: CreatePostDto, @Session() session: Record<string, any>) {
+        // Check if user is logged in
+        if (!session.userId) {
+            return `<div class="error"> Debes iniciar sesión para publicar. </div>`
+        }
+
+        // Find the real user
+        const user = await this.usersRepo.findOneBy({ id: session.userId });
+        if (!user) throw new UnauthorizedException('Usuario no válido');
+
+        // Pass user to service
+        const post = await this.postsService.create(body, user);
         return this.renderPostCard(post);
     }
 
@@ -70,10 +87,12 @@ export class PostsController {
 
     // Helper Method
     private renderPostCard(post: any) {
+        const authorName = post.author ? post.author.name : 'Anónimo';
+
         return `
             <div class="post" id="post-${post.id}">
                 <h2> ${post.title} </h2>
-                <small> ${post.user} | ${new Date(post.createdAt).toLocaleDateString()} </small>
+                <small> ${authorName} | ${new Date(post.createdAt).toLocaleDateString()} </small>
                 <p> ${post.content} </p>
 
                 <div class="post-actions">
@@ -99,7 +118,6 @@ export class PostsController {
                             class="comment-form">
 
                             <input type="hidden" name="postId" value="${post.id}">
-                            <input type="hidden" name="user" value="${post.user}">
 
                             <input type="text" name="content" placeholder="Escribe un comentario..." required>
                             <button type="submit" class="comment-btn"> Enviar </button>

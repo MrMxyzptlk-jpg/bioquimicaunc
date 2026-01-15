@@ -25,6 +25,7 @@ services:
       DB_USERNAME: bioquimicaunc_user
       DB_PASSWORD: bioquimicaunc_pass
       DB_DATABASE: bioquimicaunc_db
+      SESSION_SECRET: super-secret-dev-key
     depends_on:
       - db
     volumes:

@@ -8,6 +8,7 @@ import { Comment } from './comments/entities/comment.entity';
 import { ForumPost } from './posts/post.entity';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { CommentsModule } from './comments/comments.module';
             username: configService.get<string>('DB_USERNAME'),
             password: configService.get<string>('DB_PASSWORD'),
             database: configService.get<string>('DB_DATABASE'),
-            entities: [ForumPost, Comment],
+            entities: [ForumPost, Comment, User],
             synchronize: true,
         }),
     }),
