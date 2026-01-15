@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from "typeorm";
 import { ForumPost } from "../../posts/post.entity";
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Comment {
@@ -8,9 +9,6 @@ export class Comment {
 
     @Column()
     content: string;
-
-    @Column()
-    user:string;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -28,4 +26,8 @@ export class Comment {
     // Descendants
     @OneToMany(() => Comment, (comment) => comment.parent)
     children: Comment[]
+
+    @ManyToOne(() => User, user => user.comments, { eager: true })
+    author: User;
+
 }
