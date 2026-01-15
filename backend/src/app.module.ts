@@ -9,6 +9,8 @@ import { ForumPost } from './posts/post.entity';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
 import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -40,6 +42,10 @@ import { User } from './users/entities/user.entity';
     PostsModule,
 
     CommentsModule,
+
+    UsersModule,
+
+    AuthModule,
   ],
   controllers: [],
   providers: [],
