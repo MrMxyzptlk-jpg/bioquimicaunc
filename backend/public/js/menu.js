@@ -1,10 +1,34 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const header = document.querySelector('.site-header');
-  const menuToggle = document.getElementById('menuToggle');
+function loadHeader(pageTitle) {
+    const headerHTML = `
+        <header class="site-header menu-closed">
 
-  if (!header || !menuToggle) return;
+            <h1 class="header-quote"> ${pageTitle} </h1>
 
-  menuToggle.addEventListener('click', () => {
-    header.classList.toggle('menu-open');
-  });
-});
+            <div class="menu-logo" id="menuToggle">
+                <img src="assets/logo.jpeg" alt="Bioquímica UNC">
+            </div>
+            <nav class="menu-panel">
+                <a href="index.html">Main</a><br>
+                <a href="intro.html">Introducción</a><br>
+                <a href="foro.html">Foro</a><br>
+                <a href="particulares.html">Particulares</a><br>
+                <a href="recursos.html">Recursos</a><br>
+                <a href="developing.html">Derechos</a><br>
+                <a href="developing.html">Sugerencias</a><br>
+            </nav>
+
+        </header>
+    `;
+
+    document.body.insertAdjacentHTML('afterbegin', headerHTML);
+
+    const header = document.querySelector('.site-header');
+    const menuToggle = document.getElementById('menuToggle');
+
+    if (header && menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            header.classList.toggle('menu-open');
+        });
+    }
+}
+

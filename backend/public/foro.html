@@ -6,27 +6,9 @@
     <title>Bioquimicaunc/Foro</title>
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="./js/menu.js"></script>
 </head>
 <body>
-
-    <header class="site-header menu-closed">
-
-        <h1 class="header-quote">Foro</h1>
-
-        <div class="menu-logo" id="menuToggle">
-            <img src="assets/logo.jpeg" alt="Bioquímica UNC">
-        </div>
-        <nav class="menu-panel">
-            <a href="index.html">Main</a><br>
-            <a href="intro.html">Introducción</a><br>
-            <a href="foro.html">Foro</a><br>
-            <a href="particulares.html">Particulares</a><br>
-            <a href="recursos.html">Recursos</a><br>
-            <a href="developing.html">Derechos</a><br>
-            <a href="developing.html">Sugerencias</a><br>
-        </nav>
-
-    </header>
 
     <main class="layout-grid">
 
@@ -120,6 +102,7 @@
             document.getElementById('title').focus();
         }
     </script>
+    <script> loadHeader("Foro"); </script>
 </body>
 
 </html>
