@@ -38,7 +38,7 @@ export class CommentsController {
   private renderCommentTree(comment: any, allComments: any[], level = 0) {
     const children = allComments.filter(c => c.parent && c.parent.id === comment.id); // all children from this comment
 
-    const marginLeft = level * 20; // level-based indent
+    const marginLeft = level * 10; // level-based indent
 
     return `
         <div class="comment-wrapper" style="margin-left: ${marginLeft}px;">
@@ -47,14 +47,13 @@ export class CommentsController {
             </div>
 
             <details>
-                <summary style="cursor: pointer; font-size: 0.8rem;">
-                    Responder
-                </summary>
+                <summary> Responder </summary>
+
                 <form hx-post="/comments"
                     hx-target="#children-container-${comment.id}"
                     hx-swap="beforeend"
                     hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
-                    style="margin-top: 5px; margin-bottom: 10px;">
+                    class="comment-form">
 
                     <input type="hidden" name="postId" value="${comment.post ? comment.post.id : comment.postId}">
                     <input type="hidden" name="user" value="${comment.user}">

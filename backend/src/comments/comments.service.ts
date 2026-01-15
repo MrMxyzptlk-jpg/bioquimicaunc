@@ -41,7 +41,7 @@ export class CommentsService {
     return this.commentsRepo.find({
         where: { post: { id: postId } },
         relations: ['parent', 'children', 'post'],
-        order: { createdAt: 'ASC' }
+        order: { createdAt: 'DESC' }
     });
   }
 

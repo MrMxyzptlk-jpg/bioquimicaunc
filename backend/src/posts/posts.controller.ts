@@ -50,7 +50,7 @@ export class PostsController {
                 hx-get="/comments/post/${postId}"
                 hx-target="#comments-list-${postId}"
                 hx-swap="innerHTML"
-                class="margin-bottom: 10px;">
+                class="post-action-btn">
                 Ver Comentarios
             </button>
         `
@@ -87,29 +87,29 @@ export class PostsController {
                     </button>
                 </div>
 
-                <hr>
+                <div class="comment-wrapper" style="width: 100%;">
+                    <details>
+                        <summary> Comentar </summary>
+
+                        <form
+                            hx-post="/comments"
+                            hx-target="#comments-list-${post.id}"
+                            hx-swap="beforeend"
+                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');
+                            class="comment-form">
+
+                            <input type="hidden" name="postId" value="${post.id}">
+                            <input type="hidden" name="user" value="${post.user}">
+
+                            <input type="text" name="content" placeholder="Escribe un comentario..." required>
+                            <button type="submit" class="comment-btn"> Enviar </button>
+                        </form>
+                    </details>
+                </div>
 
                 <div id="comments-list-${post.id}" class="comments-section">
                     ${this.renderShowButton(post.id)}
                 </div>
-
-                <form
-                    hx-post="/comments"
-                    hx-target="#comments-list-${post.id}"
-                    hx-swap="beforeend"
-                    hx-on::after-request="this.reset()"
-                    class="comment-form">
-
-                    <input type="hidden" name="postId" value="${post.id}">
-                    <input type="hidden" name="user" value="${post.user}">
-
-                    <div style="display: flex; gap: 5px;">
-
-                        <input type="text" name="content" placeholder="Escribe un comentario..." required style="flex: 1;">
-
-                        <button type="submit" class="comment-btn"> Enviar </button>
-                    </div>
-                </form>
             </div>
         `
     }
