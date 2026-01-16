@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Session } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 
@@ -39,38 +39,51 @@ export class AuthController {
     }
 
     @Get('/login')
-    showLogin() {
-        return `
+    showLogin(
+        @Session() session: Record<string, any>,
+        @Res() res: Response
+    ) {
+        if (session.userId) return res.redirect('/posts');
+
+        return res.send(`
             <h2> Login </h2>
-            <form hx-post="/auth/login">
+
+            <form
+                hx-post="/auth/login"
+                hx-target="#login-error"
+                hx-swap="innerHTML">
+
                 <input name="email" type="email" placeholder="Email" required />
                 <input name="password" type="password" placeholder="Contreseña" required />
                 <button type="submit"> Login </button>
             </form>
-        `;
+
+            <div id="login-error"></div>
+            <p>
+                ¿No tenés cuenta? <a href="/auth/register"> Registrarse </>
+            </p>
+        `);
     }
 
     @Post('/login')
-    async login(@Body() body: any, @Res() res: Response) {
-        try {
-            const user = await this.authService.validateUser(
-                body.email,
-                body.password
-            );
+    async login(
+        @Body() body: any,
+        @Session() session: Record<string, any>,
+        @Res() res: Response,
+    ) {
+        const user = await this.authService.validateUser(body.email, body.password)
 
-            // Create session
-            (res.req as any).session.userId = user.id
-
-            return res
-                .header('HX-Redirect', '/posts')
-                .send();
-        } catch {
-            return res.status(401).send(`
-                    <div style="color: red; margin-top: 10px;">
-                        Email o contraseña incorrectos
-                    </div>
-                `);
+        if (!user) {
+            return res.send(`
+                <div class="error">
+                    Email o contraseña incorrectos
+                </div>
+            `);
         }
+
+        session.userId = user.id;
+
+        return res.header('HX-Redirect', '/posts').send();
     }
 
     @Post('logout')
