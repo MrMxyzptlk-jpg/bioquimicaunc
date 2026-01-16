@@ -459,7 +459,7 @@ html, body {
 
 .post-actions {
     display: grid;
-    /*grid-template-columns: 1fr auto 1fr;*/
+    grid-template-columns: 1fr 1fr;
     align-items: center;
     margin-top: 0.5rem;
     gap: 4rex;

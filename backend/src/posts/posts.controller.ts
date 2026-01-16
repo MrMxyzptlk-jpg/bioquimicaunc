@@ -77,6 +77,7 @@ export class PostsController {
 
     @UseGuards(AuthenticatedGuard)
     @Put(':id')
+    @Header('Content-Type', 'text/html')
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdatePostDto,
@@ -85,10 +86,47 @@ export class PostsController {
         const post = await this.postsService.findOne(id);
 
         if (!post) throw new NotFoundException('Post no encontrado');
-
         if (post.author.id !== session.userId) throw new ForbiddenException('No puedes editar este post');
 
-        return this.postsService.update(id, body);
+        const updated = await this.postsService.update(id, body);
+        return this.renderPostCard(updated);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get(':id/edit')
+    @Header('Content-Type', 'text/html')
+    async editForm(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const post = await this.postsService.findOne(id);
+
+        if (!post) throw new NotFoundException();
+        if (post.author.id !== session.userId) throw new ForbiddenException();
+
+        return `
+            <div class="post" id="post-${post.id}">
+                <form
+                    hx-put="/posts/${post.id}"
+                    hx-target="#post-${post.id}"
+                    hx-swap="outerHTML"
+                    class="forum-form">
+
+                    <input name="title" value="${post.title}" required>
+                    <textarea name="content" required>${post.content}</textarea>
+                    <input type="hidden" name="category" value="${post.category}" required>
+
+                    <div class="post-actions">
+                        <button type="submit"> Guardar </button>
+                        <button type="button"
+                            hx-get="/posts/fragments?category=${post.category}"
+                            hx-target="#posts-container">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -126,6 +164,13 @@ export class PostsController {
                         hx-confirm="¿Borrar post?"
                         class="post-action-btn">
                         Eliminar
+                    </button>
+                    <button
+                        hx-get="/posts/${post.id}/edit"
+                        hx-target="#post-${post.id}"
+                        hx-swap="outerHTML"
+                        class="post-action-btn">
+                        Editar
                     </button>
                 </div>
 
