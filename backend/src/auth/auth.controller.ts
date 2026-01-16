@@ -72,4 +72,13 @@ export class AuthController {
                 `);
         }
     }
+
+    @Post('logout')
+    logout(@Res() res: Response) {
+        res.req.session.destroy(() => {
+            res.clearCookie('connect.sid')
+                .header('HX-Redirect', '/login')
+                .send();
+        });
+    }
 }
