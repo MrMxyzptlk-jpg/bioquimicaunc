@@ -1,4 +1,6 @@
 function loadHeader(pageTitle) {
+    if (!window.htmx) console.warn("HTMX not loaded - auth header will not render");
+
     const headerHTML = `
         <header class="site-header menu-closed">
 

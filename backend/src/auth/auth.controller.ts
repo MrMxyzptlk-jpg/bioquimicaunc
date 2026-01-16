@@ -30,14 +30,11 @@ export class AuthController {
         return `
             <div class="auth-header">
                 <span> Hola, <strong>${user?.name}</strong></span>
-                <form
-                    hx-post="/auth/logout"
-                    hx-target="#auth-header"
-                    hx-swap="outerHTML"
-                    style="display: inline;">
 
-                    <button type="submit"> Logout </button>
+                <form hx-post="/auth/logout">
+                    <button type="submit"> Cerrar sesión </button>
                 </form>
+
             </div>
         `;
     }
@@ -45,15 +42,32 @@ export class AuthController {
     @Get('/register')
     showRegister() {
         return `
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Register</title>
+                <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            </head>
+            <body>
+
             <h2> Register </h2>
-            <form hx-post="/auth/register">
-                <input name="email" type="email" placeholder="Email" required/>
-                <input name="password" type="password" placeholder="Contraseña" required/>
-                <input name="name" placeholder="Usuario" required/>
+            <form
+                hx-post="/auth/register"
+                hx-target="body"
+                hx-swap="none">
+
+                <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
+                <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
+                <input name="name" placeholder="Usuario" required autocomplete="username"/>
                 <button type="submit"> Register </button>
             </form>
+
+            </body>
+            </html>
         `;
     }
+
 
     @Post('/register')
     async register (
@@ -82,7 +96,16 @@ export class AuthController {
         if (session.userId) return res.redirect('/posts');
 
         return res.send(`
-            <h2> Login </h2>
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Register</title>
+                <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            </head>
+            <body>
+
+            <h2> Iniciar sesión </h2>
 
             <form
                 hx-post="/auth/login"
@@ -91,13 +114,16 @@ export class AuthController {
 
                 <input name="email" type="email" placeholder="Email" required />
                 <input name="password" type="password" placeholder="Contraseña" required />
-                <button type="submit"> Login </button>
+                <button type="submit"> Iniciar sesión </button>
             </form>
 
             <div id="login-error"></div>
             <p>
                 ¿No tenés cuenta? <a href="/auth/register"> Registrarse </a>
             </p>
+
+            </body>
+            </html>
         `);
     }
 
