@@ -38,7 +38,7 @@
         <br>
         <div class="subjects">
             <button class="subject-btn"
-                hx-get="/posts/fragments?category=Ciclo Basico"
+                hx-get="/posts/fragments?category=Ciclo Básico"
                 hx-target="#forum-posts"
                 hx-swap="innerHTML"
                 onclick="setCategory('Ciclo Básico')"> Ciclo Básico</button>
@@ -48,7 +48,7 @@
                 hx-swap="innerHTML"
                 onclick="setCategory('Bioquímica')"> Bioquímica </button>
             <button class="subject-btn"
-                hx-get="/posts/fragments?category=Biotecnologia"
+                hx-get="/posts/fragments?category=Biotecnología"
                 hx-target="#forum-posts"
                 hx-swap="innerHTML"
                 onclick="setCategory('Biotecnología')"> Biotecnología </button>
@@ -58,7 +58,7 @@
                 hx-swap="innerHTML"
                 onclick="setCategory('Farmacia')"> Farmacia </button>
             <button class="subject-btn"
-                hx-get="/posts/fragments?category=Lic Quimica"
+                hx-get="/posts/fragments?category=Lic. Química"
                 hx-target="#forum-posts"
                 hx-swap="innerHTML"
                 onclick="setCategory('Lic. Química')"> Lic. Química </button>
@@ -72,7 +72,7 @@
             hx-on::after-request="this.reset(); document.querySelectorAll('#forum-posts .alert, #forum-posts .muted').forEach(el => el.remove());">
 
             <input type="hidden" name="user" value="ESTUDIANDE_UNC">
-            <input type="hidden" id="categoryInput" name="category" value="Ciclo Basico">
+            <input type="hidden" id="categoryInput" name="category" value="Ciclo Básico">
 
             <input type="text" id="title" name="title" placeholder="Título" required>
             <textarea name="content" id="postContent" rows="4" placeholder="Escribe tu consejo..." required></textarea>
