@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,6 +8,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
 import { User } from '../users/entities/user.entity';
+import { AuthenticatedGuard } from '../auth/authenticated.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -19,6 +20,7 @@ export class PostsController {
 
     // 1. Create Post (HTMX Style)
     // Returns a single HTML card to append to the list
+    @UseGuards(AuthenticatedGuard)
     @Post()
     @Header('Content-Type', 'text/html')
     async create(@Body() body: CreatePostDto, @Session() session: Record<string, any>) {
@@ -73,11 +75,13 @@ export class PostsController {
         `
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Put(':id')
     update( @Param('id', ParseIntPipe) id: number, @Body() body: UpdatePostDto) {
         return this.postsService.update(id, body);
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Delete(':id')
     @HttpCode(200)
     delete(@Param('id', ParseIntPipe) id: number ) {

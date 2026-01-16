@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -7,6 +7,7 @@ import { User } from '../users/entities/user.entity';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { AuthenticatedGuard } from '../auth/authenticated.guard';
 
 @Controller('comments')
 export class CommentsController {
@@ -16,6 +17,7 @@ export class CommentsController {
         private readonly usersRepo: Repository<User>,
     ) {}
 
+    @UseGuards(AuthenticatedGuard)
     @Post()
     @Header('Content-Type', 'text/html')
     async create(@Body() createCommentDto: CreateCommentDto, @Session() session: Record<string, any>) {
@@ -106,11 +108,13 @@ export class CommentsController {
         return this.commentsService.findOne(+id);
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
         return this.commentsService.update(+id, updateCommentDto);
     }
 
+    @UseGuards(AuthenticatedGuard)
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.commentsService.remove(+id);
