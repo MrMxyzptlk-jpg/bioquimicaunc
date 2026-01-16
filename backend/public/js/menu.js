@@ -2,8 +2,6 @@ function loadHeader(pageTitle) {
     const headerHTML = `
         <header class="site-header menu-closed">
 
-            <h1 class="header-quote"> ${pageTitle} </h1>
-
             <div class="menu-logo" id="menuToggle">
                 <img src="assets/logo.jpeg" alt="Bioquímica UNC">
             </div>
@@ -15,6 +13,14 @@ function loadHeader(pageTitle) {
                 <a href="recursos.html"> Recursos </a><br>
                 <a href="developing.html"> Derechos </a><br>
             </nav>
+            <h1 class="header-quote"> ${pageTitle} </h1>
+
+            <div
+                id="auth-header"
+                hx-get="/auth/header"
+                hx-trigger="load"
+                hx-swap="outerHTML"
+            ></div>
 
         </header>
     `;
