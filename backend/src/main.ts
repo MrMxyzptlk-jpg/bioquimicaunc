@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import session from 'express-session';
+import csrf from 'csurf';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AuthExceptionFilter } from './auth/auth-exception.filter';
 
@@ -23,6 +24,8 @@ async function bootstrap() {
             },
         }),
     );
+
+    app.use(csrf());
 
     app.useGlobalPipes(new ValidationPipe({
         transform: true,

@@ -102,7 +102,7 @@ export class AuthController {
         } catch {
             return res.send(`
                     <div class="error">
-                        El email está registrado
+                        El email ya está registrado
                     </div>
                 `);
         }
