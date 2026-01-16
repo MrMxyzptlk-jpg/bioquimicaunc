@@ -50,6 +50,7 @@ export class AuthController {
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
                 <script src="/js/menu.js"></script>
+                <script src="/js/footer.js"></script>
             </head>
             <body>
                 <main class="layout-development">
@@ -74,7 +75,7 @@ export class AuthController {
                         La educación no es algo que se imparte, sino que se comparte
                     </p>
                 </footer>
-                <script> loadHeader("Registro"); </script>
+                <script> loadHeader("Registro"); loadFooter();</script>
             </body>
             </html>
         `;
@@ -124,6 +125,7 @@ export class AuthController {
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
                 <script src="/js/menu.js"></script>
+                <script src="/js/footer.js"></script>
             </head>
             <body>
                 <main class="layout-development">
@@ -150,7 +152,7 @@ export class AuthController {
                         La educación no es algo que se imparte, sino que se comparte
                     </p>
                 </footer>
-                <script> loadHeader("Iniciar sesión"); </script>
+                <script> loadHeader("Iniciar sesión"); loadFooter();</script>
             </body>
             </html>
         `);

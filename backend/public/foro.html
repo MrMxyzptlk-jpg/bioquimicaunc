@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="./js/menu.js"></script>
+    <script src="./js/footer.js"></script>
 </head>
 <body>
 
@@ -88,12 +89,6 @@
 
     </main>
 
-    <footer class="site-footer">
-    <p class="footer-quote">
-        La educación no es algo que se imparte, sino que se comparte
-    </p>
-    </footer>
-
     <script>
         function setCategory(cat) {
             document.getElementById('categoryInput').value = cat;
@@ -102,7 +97,7 @@
             document.getElementById('title').focus();
         }
     </script>
-    <script> loadHeader("Foro"); </script>
+    <script> loadHeader("Foro"); loadFooter();</script>
 </body>
 
 </html>
