@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
 
+import { Comment } from './entities/comment.entity'
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -27,7 +28,36 @@ export class CommentsController {
         if (!user) throw new UnauthorizedException();
 
         const newComment = await this.commentsService.create(createCommentDto, user);
-        return this.renderCommentTree(newComment, []);
+        return this.renderSingleComment(newComment);
+    }
+
+    private renderSingleComment(comment: Comment) {
+        return `
+            <div class="comment-wrapper">
+                <div class="comment-content" style="margin-left: 10px;">
+                    <strong> ${comment.author.name}</strong>
+                    ${comment.content}
+                </div>
+                <details>
+                    <summary> Responder </summary>
+                    <form
+                        hx-post="/comments"
+                        hx-target="#children-container-${comment.id}"
+                        hx-swap="beforeend"
+                        hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
+                        class="comment-form">
+
+                        <input type="hidden" name="postId" value="${comment.post.id}">
+                        <input type="hidden" name="parentId" value="${comment.id}">
+                        <input name="content" required>
+                        <button type="submit"> Enviar </button>
+                    </form>
+                </details>
+
+                <div id="children-container-${comment.id}"></div>
+
+            </div>
+        `;
     }
 
     @Get('post/:postId')
@@ -54,13 +84,13 @@ export class CommentsController {
     private renderCommentTree(comment: any, allComments: any[], level = 0) {
         const children = allComments.filter(c => c.parent && c.parent.id === comment.id); // all children from this comment
 
-        const paddingLeft = level * 10; // level-based indent
+        const paddingLeft = level * 15; // level-based indent
 
         const authorName = comment.author ? comment.author.name : 'Anónimo';
 
         return `
-            <div class="comment-wrapper" style="padding-left: ${paddingLeft}px;">
-                <div class="comment-content">
+            <div class="comment-wrapper">
+                <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <strong> ${authorName} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
                 </div>
 

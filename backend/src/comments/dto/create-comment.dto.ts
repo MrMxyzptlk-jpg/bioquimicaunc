@@ -6,10 +6,6 @@ export class CreateCommentDto {
     @IsNotEmpty()
     content: string;
 
-    @IsString()
-    @IsNotEmpty()
-    user: string;
-
     @Type(() => Number)
     @IsNumber()
     postId: number;

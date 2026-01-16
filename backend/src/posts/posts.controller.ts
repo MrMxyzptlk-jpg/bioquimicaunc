@@ -137,7 +137,11 @@ export class PostsController {
                             hx-post="/comments"
                             hx-target="#comments-list-${post.id}"
                             hx-swap="beforeend"
-                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');
+                            hx-on::before-request="
+                                if (!document.querySelector('#comments-list-${post.id} .comment-wrapper')) {
+                                    htmx.ajax('GET', '/comments/post/${post.id}', '#comments-list-${post.id}');
+                                }"
+                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
                             class="comment-form">
 
                             <input type="hidden" name="postId" value="${post.id}">
