@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -77,15 +77,34 @@ export class PostsController {
 
     @UseGuards(AuthenticatedGuard)
     @Put(':id')
-    update( @Param('id', ParseIntPipe) id: number, @Body() body: UpdatePostDto) {
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: UpdatePostDto,
+        @Session() session: Record<string, any>
+    ) {
+        const post = await this.postsService.findOne(id);
+
+        if (!post) throw new NotFoundException('Post no encontrado');
+
+        if (post.author.id !== session.userId) throw new ForbiddenException('No puedes editar este post');
+
         return this.postsService.update(id, body);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Delete(':id')
     @HttpCode(200)
-    delete(@Param('id', ParseIntPipe) id: number ) {
-        this.postsService.remove(id);
+    async delete(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const post = await this.postsService.findOne(id);
+
+        if (!post) throw new NotFoundException('Post no encontrado');
+
+        if (post.author.id !== session.userId) throw new ForbiddenException('No puedes borrar este post');
+
+        await this.postsService.remove(id);
         return ""; // empty string for HTMX to swap in the HTML
     }
 

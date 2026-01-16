@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException, UseGuards, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -88,21 +88,6 @@ export class CommentsController {
         `;
     }
 
-    private renderMainForm(postId: number) {
-        return `
-            <hr>
-            <form hx-post="/comments"
-                hx-target=".comments-list"
-                hx-swap="beforeend"
-                hx-on::after-request="this.reset()">
-                <input type="hidden" name="postId" value="${postId}">
-                <input type="hidden" name="user" value="User">
-                <textarea name="content" placeholder="Escribe un comentario nuevo..." required></textarea>
-                <button type="submit" class="subject-btn"> Comentar </button>
-            </form>
-        `;
-    }
-
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.commentsService.findOne(+id);
@@ -110,13 +95,40 @@ export class CommentsController {
 
     @UseGuards(AuthenticatedGuard)
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
+    async update(
+        @Param('id') id: string,
+        @Body() updateCommentDto: UpdateCommentDto,
+        @Session() session: Record<string, any>
+    ) {
+        const comment = await this.commentsService.findOne(+id);
+
+        if (!comment) {
+            throw new NotFoundException('Comentario no encontrado');
+        }
+
+        if (comment.author.id !== session.userId) {
+            throw new ForbiddenException('No puedes borrar este comentario');
+        }
+
         return this.commentsService.update(+id, updateCommentDto);
     }
 
     @UseGuards(AuthenticatedGuard)
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    async remove(
+        @Param('id') id: string,
+        @Session() session: Record<string, any>
+    ) {
+        const comment = await this.commentsService.findOne(+id);
+
+        if (!comment) {
+            throw new NotFoundException('Comentario no encontrado');
+        }
+
+        if (comment.author.id !== session.userId) {
+            throw new ForbiddenException('No puedes borrar este comentario');
+        }
+
         return this.commentsService.remove(+id);
     }
 }

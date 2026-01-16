@@ -20,47 +20,50 @@ export class CommentsService {
         private postsRepo: Repository<ForumPost>,
     ) {}
 
-  async create(createCommentDto: CreateCommentDto, user: User) {
-    const post = await this.postsRepo.findOneBy({ id: createCommentDto.postId });
-    if (!post) throw new NotFoundException('Post no encontrado');
+    async create(createCommentDto: CreateCommentDto, user: User) {
+        const post = await this.postsRepo.findOneBy({ id: createCommentDto.postId });
+        if (!post) throw new NotFoundException('Post no encontrado');
 
-    let parentComment: Comment | null = null;
+        let parentComment: Comment | null = null;
 
-    if (createCommentDto.parentId) {
-        parentComment = await this.commentsRepo.findOneBy({ id: createCommentDto.parentId });
+        if (createCommentDto.parentId) {
+            parentComment = await this.commentsRepo.findOneBy({ id: createCommentDto.parentId });
+        }
+
+        const comment = this.commentsRepo.create({
+            content: createCommentDto.content,
+            author: user,
+            post: post,
+            parent: parentComment,
+        });
+
+        return this.commentsRepo.save(comment);
     }
 
-    const comment = this.commentsRepo.create({
-        content: createCommentDto.content,
-        author: user,
-        post: post,
-        parent: parentComment,
-    });
+    async findByPost(postId:number) {
+        return this.commentsRepo.find({
+            where: { post: { id: postId } },
+            relations: ['post', 'author', 'parent'],
+            order: { createdAt: 'DESC' }
+        });
+    }
 
-    return this.commentsRepo.save(comment);
-  }
+    findAll() {
+        return `This action returns all comments`;
+    }
 
-  async findByPost(postId:number) {
-    return this.commentsRepo.find({
-        where: { post: { id: postId } },
-        relations: ['post', 'author', 'parent'],
-        order: { createdAt: 'DESC' }
-    });
-  }
+    findOne(id: number) {
+        return this.commentsRepo.findOne({
+            where: { id },
+            relations:  ['author']
+        });
+    }
 
-  findAll() {
-    return `This action returns all comments`;
-  }
+    update(id: number, updateCommentDto: UpdateCommentDto) {
+        return `This action updates a #${id} comment`;
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
-
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
-  }
+    remove(id: number) {
+        return `This action removes a #${id} comment`;
+    }
 }
