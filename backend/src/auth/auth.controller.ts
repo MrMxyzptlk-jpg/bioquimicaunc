@@ -46,23 +46,35 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
-                <title>Register</title>
+                <title> Registros </title>
+                <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+                <script src="/js/menu.js"></script>
             </head>
             <body>
+                <main class="layout-development">
+                    <div class="description-div">
+                        <h2> Completa tus datos </h2>
+                        <form
+                            hx-post="/auth/register"
+                            hx-target="#error"
+                            hx-swap="innerHTML">
 
-            <h2> Register </h2>
-            <form
-                hx-post="/auth/register"
-                hx-target="body"
-                hx-swap="none">
+                            <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
+                            <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
+                            <input name="name" placeholder="Usuario" required autocomplete="username"/>
+                            <button type="submit" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Registrarse </button>
+                        </form>
 
-                <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
-                <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
-                <input name="name" placeholder="Usuario" required autocomplete="username"/>
-                <button type="submit"> Register </button>
-            </form>
-
+                        <div id="error"></div>
+                    </div>
+                </main>
+                <footer class="site-footer">
+                    <p class="footer-quote">
+                        La educación no es algo que se imparte, sino que se comparte
+                    </p>
+                </footer>
+                <script> loadHeader("Registro"); </script>
             </body>
             </html>
         `;
@@ -74,18 +86,26 @@ export class AuthController {
         @Body() body: any,
         @Res() res: Response,
     ) {
-        const user = await this.authService.register(
-            body.email,
-            body.password,
-            body.name,
-        );
+        try {
+            const user = await this.authService.register(
+                body.email,
+                body.password,
+                body.name,
+            );
 
-        // Log in immediately
-        (res.req as any).session.userId = user.id;
+            // Log in immediately
+            (res.req as any).session.userId = user.id;
 
-        return res
-            .header('HX-Redirect', '/posts')
-            .send();
+            return res
+                .header('HX-Redirect', '/posts')
+                .send();
+        } catch {
+            return res.send(`
+                    <div class="error">
+                        El email está registrado
+                    </div>
+                `);
+        }
     }
 
     @Get('/login')
@@ -100,28 +120,37 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
-                <title>Register</title>
+                <title> Iniciar sesión </title>
+                <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+                <script src="/js/menu.js"></script>
             </head>
             <body>
+                <main class="layout-development">
+                    <div class="description-div">
+                        <h2> Completa tus datos </h2>
+                        <form
+                            hx-post="/auth/login"
+                            hx-target="#login-error"
+                            hx-swap="innerHTML">
 
-            <h2> Iniciar sesión </h2>
+                            <input name="email" type="email" placeholder="Email" required />
+                            <input name="password" type="password" placeholder="Contraseña" required />
+                            <button type="submit" class="log-btn"> Iniciar sesión </button>
+                        </form>
 
-            <form
-                hx-post="/auth/login"
-                hx-target="#login-error"
-                hx-swap="innerHTML">
-
-                <input name="email" type="email" placeholder="Email" required />
-                <input name="password" type="password" placeholder="Contraseña" required />
-                <button type="submit"> Iniciar sesión </button>
-            </form>
-
-            <div id="login-error"></div>
-            <p>
-                ¿No tenés cuenta? <a href="/auth/register"> Registrarse </a>
-            </p>
-
+                        <div id="login-error"></div>
+                        <p>
+                            ¿No tenés cuenta? <a class="log-btn" href="/auth/register"> Registrarse </a>
+                        </p>
+                    </div>
+                </main>
+                <footer class="site-footer">
+                    <p class="footer-quote">
+                        La educación no es algo que se imparte, sino que se comparte
+                    </p>
+                </footer>
+                <script> loadHeader("Iniciar sesión"); </script>
             </body>
             </html>
         `);

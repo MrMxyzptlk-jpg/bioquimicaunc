@@ -5,15 +5,15 @@ function loadHeader(pageTitle) {
         <header class="site-header menu-closed">
 
             <div class="menu-logo" id="menuToggle">
-                <img src="assets/logo.jpeg" alt="Bioquímica UNC">
+                <img src="/assets/logo.jpeg" alt="Bioquímica UNC">
             </div>
             <nav class="menu-panel">
-                <a href="index.html"> Inicio </a><br>
-                <a href="intro.html"> Introducción </a><br>
-                <a href="foro.html"> Foro </a><br>
-                <a href="particulares.html"> Particulares </a><br>
-                <a href="recursos.html"> Recursos </a><br>
-                <a href="developing.html"> Derechos </a><br>
+                <a href="/index.html"> Inicio </a><br>
+                <a href="/intro.html"> Introducción </a><br>
+                <a href="/foro.html"> Foro </a><br>
+                <a href="/particulares.html"> Particulares </a><br>
+                <a href="/recursos.html"> Recursos </a><br>
+                <a href="/developing.html"> Derechos </a><br>
             </nav>
             <h1 class="header-quote"> ${pageTitle} </h1>
 
