@@ -13,6 +13,9 @@ export class Comment {
     @CreateDateColumn()
     createdAt: Date;
 
+    @CreateDateColumn()
+    updatedAt: Date;
+
     // Relationship: Many Comments -> One Post
     @ManyToOne(() => ForumPost, (post) => post.comments, { onDelete: 'CASCADE' })
     post: ForumPost;

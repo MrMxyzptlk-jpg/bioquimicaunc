@@ -68,7 +68,8 @@ export class CommentsController {
         if (comment.author.id !== session.userId) throw new ForbiddenException();
 
         const deletedComment = await this.commentsService.remove(id);
-        return this.renderComment(deletedComment, session.userId);
+        const allComments = await this.commentsService.findByPost(deletedComment.post.id);
+        return this.renderCommentTree(deletedComment, allComments, session.userId);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -211,10 +212,10 @@ export class CommentsController {
         const canEdit = !isDeleted && (comment.author?.id === userId);
 
         return `
-            <div class="comment-wrapper">
+            <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <small>
-                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
+                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${`[Editado: ${new Date(comment.updatedAt).toLocaleDateString()}]`}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
                 </div>
