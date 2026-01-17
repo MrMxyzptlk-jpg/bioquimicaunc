@@ -69,7 +69,7 @@
             hx-post="/posts"
             hx-target="#forum-posts"
             hx-swap="afterbegin"
-            hx-on::after-request="this.reset(); document.querySelectorAll('#forum-posts .alert, #forum-posts .muted').forEach(el => el.remove());">
+            hx-on::after-request="this.reset(); document.querySelectorAll('#forum-posts .signal).forEach(el => el.remove());">
 
             <input type="hidden" name="user" value="ESTUDIANDE_UNC">
             <input type="hidden" id="categoryInput" name="category" value="Ciclo Básico">
@@ -94,7 +94,7 @@
             document.getElementById('categoryInput').value = cat;
             document.getElementById('title').placeholder = `Titulo (Publicado en ${cat})`;
             document.getElementById('postForm').style.display = 'flex';
-            document.getElementById('title').focus();
+            document.getElementById('title');
         }
     </script>
     <script> loadHeader("Foro"); loadFooter();</script>

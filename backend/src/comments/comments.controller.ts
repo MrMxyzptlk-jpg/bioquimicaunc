@@ -142,7 +142,7 @@ export class CommentsController {
         return `
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment">
-                    <small>
+                    <small class="comment-details">
                         <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
                     </small>
                     <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
@@ -176,7 +176,9 @@ export class CommentsController {
         return `
             <div class="comment-wrapper">
                 <div class="comment-content" style="margin-left: 10px;">
-                    <strong> ${comment.author.name}</strong>
+                    <small class="comment-details">
+                        <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
+                    </small>
                     ${comment.content}
                 </div>
                 <div class="comment-actions">
@@ -207,7 +209,7 @@ export class CommentsController {
 
                         <input type="hidden" name="postId" value="${comment.post.id}">
                         <input type="hidden" name="parentId" value="${comment.id}">
-                        <input name="content" required>
+                        <textarea name="content" required></textarea>
                         <button type="submit"> Enviar </button>
                     </form>
                 </details>
@@ -239,7 +241,7 @@ export class CommentsController {
         return `
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
-                    <small>
+                    <small class="comment-details">
                         <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong>
                         ${ wasEdited ? `[Editado: ${updated.toLocaleDateString()}]` : ''}
                     </small>
@@ -278,7 +280,7 @@ export class CommentsController {
                             <input type="hidden" name="postId" value="${comment.post ? comment.post.id : comment.postId}">
                             <input type="hidden" name="parentId" value="${comment.id}">
 
-                            <input type="text" name="content" placeholder="Respuesta..." required>
+                            <textarea type="text" name="content" placeholder="Respuesta..." required></textarea>
                             <button type="submit" style="font-size:0.8rem;"> Enviar </button>
                         </form>
                     </details>

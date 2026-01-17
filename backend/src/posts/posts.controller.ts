@@ -56,7 +56,7 @@ export class PostsController {
         const posts = await this.postsService.findByCategory(category);
 
         if (posts.length === 0) {
-            return `<p class="alert"> No hay publicaciones en ${category}. ¡Sé el primero! </p>`
+            return `<p class="signal"> No hay publicaciones en ${category}. ¡Sé el primero! </p>`
         }
 
         // Conver all posts to HTML strings
@@ -207,7 +207,7 @@ export class PostsController {
 
                             <input type="hidden" name="postId" value="${post.id}">
 
-                            <input type="text" name="content" placeholder="Escribe un comentario..." required>
+                            <textarea type="text" name="content" placeholder="Escribe un comentario..." required></textarea>
                             <button type="submit" class="comment-btn"> Enviar </button>
                         </form>
                     </details>
