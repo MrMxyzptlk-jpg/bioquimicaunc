@@ -23,7 +23,10 @@ export class PostsController {
     @UseGuards(AuthenticatedGuard)
     @Post()
     @Header('Content-Type', 'text/html')
-    async create(@Body() body: CreatePostDto, @Session() session: Record<string, any>) {
+    async create(
+        @Body() body: CreatePostDto,
+        @Session() session: Record<string, any>
+    ) {
         // Check if user is logged in
         if (!session.userId) {
             return `<div class="error"> Debes iniciar sesión para publicar. </div>`
@@ -35,10 +38,10 @@ export class PostsController {
 
         // Pass user to service
         const post = await this.postsService.create(body, user);
-        return this.renderPostCard(post);
+        return this.renderPostCard(post, session.userId); // Pass session.userId so the new post shows buttons immediately
     }
 
-    // 2. Get JSON (Optional, keept for debugging)
+    // 2. Get JSON (Optional, kept for debugging)
     @Get('json')
     findByCategory(@Query('category') category: string): Promise<ForumPost[]> {
         return this.postsService.findByCategory(category);
@@ -46,7 +49,10 @@ export class PostsController {
 
     @Get('fragments')
     @Header('Content-Type', 'text/html')
-    async findByCategoryFragment(@Query('category') category: string): Promise<string> {
+    async findByCategoryFragment(
+        @Query('category') category: string,
+        @Session() session: Record<string, any>
+    ): Promise<string> {
         const posts = await this.postsService.findByCategory(category);
 
         if (posts.length === 0) {
@@ -54,7 +60,7 @@ export class PostsController {
         }
 
         // Conver all posts to HTML strings
-        return posts.map(post => this.renderPostCard(post)).join('');
+        return posts.map(post => this.renderPostCard(post, session.userId)).join('');
     }
 
     @Get(':id/comments-button')
@@ -89,7 +95,7 @@ export class PostsController {
         if (post.author.id !== session.userId) throw new ForbiddenException('No puedes editar este post');
 
         const updated = await this.postsService.update(id, body);
-        return this.renderPostCard(updated);
+        return this.renderPostCard(updated, session.userId);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -147,32 +153,34 @@ export class PostsController {
     }
 
     // Helper Method
-    private renderPostCard(post: any) {
-        const authorName = post.author ? post.author.name : 'Anónimo';
+    private renderPostCard(post: any, userId?: number) {
+        const canEdit = post.author?.id === userId
 
         return `
             <div class="post" id="post-${post.id}">
                 <h2> ${post.title} </h2>
-                <small> ${authorName} | ${new Date(post.createdAt).toLocaleDateString()} </small>
+                <small> ${post.author.name} | ${new Date(post.createdAt).toLocaleDateString()} </small>
                 <p> ${post.content} </p>
 
-                <div class="post-actions">
-                    <button
-                        hx-delete="/posts/${post.id}"
-                        hx-target="#post-${post.id}"
-                        hx-swap="outerHTML"
-                        hx-confirm="¿Borrar post?"
-                        class="post-action-btn">
-                        Eliminar
-                    </button>
-                    <button
-                        hx-get="/posts/${post.id}/edit"
-                        hx-target="#post-${post.id}"
-                        hx-swap="outerHTML"
-                        class="post-action-btn">
-                        Editar
-                    </button>
-                </div>
+                ${ canEdit ? `
+                    <div class="post-actions">
+                        <button
+                            hx-delete="/posts/${post.id}"
+                            hx-target="#post-${post.id}"
+                            hx-swap="outerHTML"
+                            hx-confirm="¿Borrar post?"
+                            class="post-action-btn">
+                            Eliminar
+                        </button>
+                        <button
+                            hx-get="/posts/${post.id}/edit"
+                            hx-target="#post-${post.id}"
+                            hx-swap="outerHTML"
+                            class="post-action-btn">
+                            Editar
+                        </button>
+                    </div>
+                ` : ''}
 
                 <div class="comment-wrapper" style="width: 100%;">
                     <details>
