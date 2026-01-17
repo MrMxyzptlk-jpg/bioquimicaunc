@@ -122,7 +122,7 @@ export class CommentsController {
         if (comment.author.id !== session.userId) throw new ForbiddenException();
 
         const updatedComment = await this.commentsService.update(id, UpdateCommentDto);
-        return this.renderComment(updatedComment, session.userId);
+        return this.renderSingleComment(updatedComment, session.userId);
     }
 
     @Get(':id')
@@ -131,19 +131,23 @@ export class CommentsController {
         const comment = await this.commentsService.findOne(id);
         if (!comment) throw new NotFoundException();
 
-        return this.renderCommentTree(comment, session?.userId)
+        return this.renderSingleComment(comment, session?.userId)
     }
 
     private renderComment(comment: Comment, UserId?: number) {
-        //const authorName = comment.author ? comment.author.name : 'Anónimo'; // If author is null (deleted), use 'Anónimo'
         const isDeleted = comment.content === '[Comentario borrado]'
         const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
+
+        const created = new Date(comment.createdAt);
+        const updated = new Date(comment.updatedAt);
+        const wasEdited = updated.getTime() > (created.getTime() + 1000); // 1s buffer
 
         return `
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment">
                     <small class="comment-details">
                         <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
+                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
                     </small>
                     <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
 
@@ -173,13 +177,19 @@ export class CommentsController {
         const isDeleted = comment.content === '[Comentario borrado]'
         const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
 
+        const created = new Date(comment.createdAt);
+        const updated = new Date(comment.updatedAt);
+        const wasEdited = updated.getTime() > (created.getTime() + 1000); // 1s buffer
+
         return `
-            <div class="comment-wrapper">
+            <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="margin-left: 10px;">
                     <small class="comment-details">
                         <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
+                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
                     </small>
-                    ${comment.content}
+                    <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
+
                 </div>
                 <div class="comment-actions">
                     ${canEdit ? `
@@ -242,8 +252,8 @@ export class CommentsController {
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <small class="comment-details">
-                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong>
-                        ${ wasEdited ? `[Editado: ${updated.toLocaleDateString()}]` : ''}
+                        <strong> ${comment.author.name} </strong> | ${new Date(comment.createdAt).toLocaleDateString()}
+                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
                 </div>

@@ -63,6 +63,18 @@ export class PostsController {
         return posts.map(post => this.renderPostCard(post, session.userId)).join('');
     }
 
+    @UseGuards(AuthenticatedGuard)
+    @Get(':id/fragment')
+    @Header('Content-Type', 'text/html')
+    async postFragment(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const post = await this.postsService.findOne(id);
+        if (!post) throw new NotFoundException();
+        return this.renderPostCard(post, session.userId);
+    }
+
     @Get(':id/comments-button')
     getCommentsButton(@Param('id') id: string) {
         return this.renderShowButton(+id);
@@ -125,8 +137,9 @@ export class PostsController {
                     <div class="post-actions">
                         <button type="submit"> Guardar </button>
                         <button type="button"
-                            hx-get="/posts/fragments?category=${post.category}"
-                            hx-target="#posts-container">
+                            hx-get="/posts/${post.id}/fragment"
+                            hx-target="#post-${post.id}"
+                            hx-swap="outerHTML">
                             Cancelar
                         </button>
                     </div>
