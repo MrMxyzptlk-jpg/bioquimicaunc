@@ -52,18 +52,28 @@ export class CommentsService {
         return `This action returns all comments`;
     }
 
-    findOne(id: number) {
+    async findOne(id: number) {
         return this.commentsRepo.findOne({
             where: { id },
-            relations:  ['author']
+            relations:  ['author', 'post']
         });
     }
 
-    update(id: number, updateCommentDto: UpdateCommentDto) {
-        return `This action updates a #${id} comment`;
+    async update(id: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+        await this.commentsRepo.update(id, updateCommentDto);
+        const comment = await this.findOne(id);
+
+        if (!comment) throw new NotFoundException(`Comment with id ${id} not found after update`);
+
+        return comment;
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} comment`;
+    async remove(id: number): Promise<Comment> {
+        await this.commentsRepo.update(id, { content: '[Comentario borrado]'}); //author: null in case we want to remove the author as well
+        const comment = await this.findOne(id);
+
+        if (!comment) throw new NotFoundException(`Comment with id ${id} not found after delete`);
+
+        return comment;
     }
 }

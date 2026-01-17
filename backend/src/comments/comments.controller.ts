@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException, UseGuards, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Session, UnauthorizedException, UseGuards, ForbiddenException, NotFoundException, ParseIntPipe, HttpCode, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -22,13 +22,150 @@ export class CommentsController {
     @Post()
     @Header('Content-Type', 'text/html')
     async create(@Body() createCommentDto: CreateCommentDto, @Session() session: Record<string, any>) {
-        if (!session.userId) return `<div class="error"> Login required </div>`;
+        if (!session.userId) return `<div class="error"> Se necesita sesión iniciada </div>`;
 
         const user = await this.usersRepo.findOneBy({ id: session.userId });
         if (!user) throw new UnauthorizedException();
 
         const newComment = await this.commentsService.create(createCommentDto, user);
         return this.renderSingleComment(newComment);
+    }
+
+    @Get('post/:postId')
+    @Header('Content-Type', 'text/html')
+    async findByPost(
+        @Param('postId') postId: string,
+        @Session() session: Record<string, any>
+    ) {
+        const allComments = await this.commentsService.findByPost(+postId);
+        const rootComments = allComments.filter(c => !c.parent); // Filter to find only root comments
+
+        const hideButton = `
+            <button
+                hx-get="/posts/${postId}/comments-button"
+                hx-target="#comments-list-${postId}"
+                hx-swap="innerHTML"
+                class="post-action-btn">
+                Ocultar Comnetarios
+            </button>
+        `;
+
+        if (rootComments.length === 0 ) return hideButton + '<p class="text-muted"> No hay comentarios aún. </p>';
+
+        return hideButton + rootComments.map(c => this.renderCommentTree(c, allComments, session?.userId)).join('');
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Delete(':id')
+    @Header('Content-type', 'text/html')
+    async delete(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const comment = await this.commentsService.findOne(id);
+
+        if (!comment) throw new NotFoundException();
+        if (comment.author.id !== session.userId) throw new ForbiddenException();
+
+        const deletedComment = await this.commentsService.remove(id);
+        return this.renderComment(deletedComment, session.userId);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get(':id/edit')
+    @Header('Content-type', 'text/html')
+    async editForm(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const comment = await this.commentsService.findOne(id);
+
+        if (!comment) throw new NotFoundException();
+        if (comment.author.id !== session.userId) throw new ForbiddenException();
+
+        return `
+            <div class="comment-wrapper" id="comment-${comment.id}">
+                <form
+                    hx-put="/comments/${comment.id}"
+                    hx-target="#comment-${comment.id}"
+                    hx-swap="outerHTML"
+                    class="comment-edit-form">
+
+                    <textarea name="content" required>${comment.content}</textarea>
+
+                    <div class="comment-actions">
+                        <button type="submit"> Guardar </button>
+                        <button type="button"
+                            hx-get="/comments/${comment.id}"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Put(':id')
+    @Header('Content-Type', 'text/html')
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() UpdateCommentDto: UpdateCommentDto,
+        @Session() session: Record<string, any>
+    ) {
+        const comment = await this.commentsService.findOne(id);
+
+        if (!comment) throw new NotFoundException();
+        if (comment.author.id !== session.userId) throw new ForbiddenException();
+
+        const updatedComment = await this.commentsService.update(id, UpdateCommentDto);
+        return this.renderComment(updatedComment, session.userId);
+    }
+
+    @Get(':id')
+    @Header('Content-Type', 'text/html')
+    async fragment(@Param('id', ParseIntPipe) id: number, @Session() session) {
+        const comment = await this.commentsService.findOne(id);
+        if (!comment) throw new NotFoundException();
+
+        return this.renderCommentTree(comment, session?.userId)
+    }
+
+    private renderComment(comment: Comment, UserId?: number) {
+        //const authorName = comment.author ? comment.author.name : 'Anónimo'; // If author is null (deleted), use 'Anónimo'
+        const isDeleted = comment.content === '[Comentario borrado]'
+        const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
+
+        return `
+            <div class="comment-wrapper" id="comment-${comment.id}">
+                <div class="comment">
+                    <small>
+                        <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
+                    </small>
+                    <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
+
+                    <div class="comment-actions">
+                        ${canEdit ? `
+                            <button
+                                hx-get="/comments/${comment.id}/edit"
+                                hx-target="#comment-${comment.id}"
+                                hx-swap="outerHTML">
+                                Editar
+                            </button>
+                            <button
+                                hx-delete="/comments/${comment.id}"
+                                hx-target="#comment-${comment.id}"
+                                hx-swap="outerHTML"
+                                hx-confirm="¿Borrar comentario?">
+                                Eliminar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `
     }
 
     private renderSingleComment(comment: Comment) {
@@ -60,105 +197,71 @@ export class CommentsController {
         `;
     }
 
-    @Get('post/:postId')
-    @Header('Content-Type', 'text/html')
-    async findByPost(@Param('postId') postId: string) {
-        const allComments = await this.commentsService.findByPost(+postId);
-        const rootComments = allComments.filter(c => !c.parent); // Filter to find only root comments
-
-        const hideButton = `
-            <button
-                hx-get="/posts/${postId}/comments-button"
-                hx-target="#comments-list-${postId}"
-                hx-swap="innerHTML"
-                class="post-action-btn">
-                Ocultar Comnetarios
-            </button>
-        `;
-
-        if (rootComments.length === 0 ) return hideButton + '<p class="text-muted"> No hay comentarios aún. </p>';
-
-        return hideButton + rootComments.map(c => this.renderCommentTree(c, allComments)).join('');
-    }
-
-    private renderCommentTree(comment: any, allComments: any[], level = 0) {
+    private renderCommentTree(
+        comment: any,
+        allComments: any[],
+        userId?: number,
+        level = 0
+    ) {
         const children = allComments.filter(c => c.parent && c.parent.id === comment.id); // all children from this comment
 
         const paddingLeft = level * 15; // level-based indent
 
-        const authorName = comment.author ? comment.author.name : 'Anónimo';
+        const isDeleted = comment.content === '[Comentario borrado]';
+        const canEdit = !isDeleted && (comment.author?.id === userId);
 
         return `
             <div class="comment-wrapper">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
-                    <strong> ${authorName} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
+                    <small>
+                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${comment.content}
+                    </small>
+                    <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
                 </div>
 
-                <details>
-                    <summary> Responder </summary>
+                ${ canEdit ? `
+                    <div class="comment-actions">
+                        <button
+                            hx-get="/comments/${comment.id}/edit"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML">
+                            Editar
+                        </button>
 
-                    <form hx-post="/comments"
-                        hx-target="#children-container-${comment.id}"
-                        hx-swap="beforeend"
-                        hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
-                        class="comment-form">
+                        <button
+                            hx-delete="/comments/${comment.id}"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML"
+                            hx-confirm="¿Borrar comentario?">
+                            Eliminar
+                        </button>
+                    </div>
+                ` : ''}
 
-                        <input type="hidden" name="postId" value="${comment.post ? comment.post.id : comment.postId}">
-                        <input type="hidden" name="parentId" value="${comment.id}">
+                ${ !isDeleted ? `
+                    <details>
+                        <summary> Responder </summary>
 
-                        <input type="text" name="content" placeholder="Respuesta..." required>
-                        <button type="submit" style="font-size:0.8rem;"> Enviar </button>
-                    </form>
-                </details>
+                        <form hx-post="/comments"
+                            hx-target="#children-container-${comment.id}"
+                            hx-swap="beforeend"
+                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
+                            class="comment-form">
+
+                            <input type="hidden" name="postId" value="${comment.post ? comment.post.id : comment.postId}">
+                            <input type="hidden" name="parentId" value="${comment.id}">
+
+                            <input type="text" name="content" placeholder="Respuesta..." required>
+                            <button type="submit" style="font-size:0.8rem;"> Enviar </button>
+                        </form>
+                    </details>
+                ` : ''}
 
                 <div id="children-container-${comment.id}">
-                    ${children.map(child => this.renderCommentTree(child, allComments, level + 1)).join('')}
+                    ${children.map(child => this.renderCommentTree(child, allComments, userId, level + 1)).join('')}
                 </div>
+
             </div>
         `;
-    }
-
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.commentsService.findOne(+id);
-    }
-
-    @UseGuards(AuthenticatedGuard)
-    @Patch(':id')
-    async update(
-        @Param('id') id: string,
-        @Body() updateCommentDto: UpdateCommentDto,
-        @Session() session: Record<string, any>
-    ) {
-        const comment = await this.commentsService.findOne(+id);
-
-        if (!comment) {
-            throw new NotFoundException('Comentario no encontrado');
-        }
-
-        if (comment.author.id !== session.userId) {
-            throw new ForbiddenException('No puedes borrar este comentario');
-        }
-
-        return this.commentsService.update(+id, updateCommentDto);
-    }
-
-    @UseGuards(AuthenticatedGuard)
-    @Delete(':id')
-    async remove(
-        @Param('id') id: string,
-        @Session() session: Record<string, any>
-    ) {
-        const comment = await this.commentsService.findOne(+id);
-
-        if (!comment) {
-            throw new NotFoundException('Comentario no encontrado');
-        }
-
-        if (comment.author.id !== session.userId) {
-            throw new ForbiddenException('No puedes borrar este comentario');
-        }
-
-        return this.commentsService.remove(+id);
     }
 }
