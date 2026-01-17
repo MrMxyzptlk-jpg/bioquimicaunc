@@ -28,7 +28,7 @@ export class CommentsController {
         if (!user) throw new UnauthorizedException();
 
         const newComment = await this.commentsService.create(createCommentDto, user);
-        return this.renderSingleComment(newComment);
+        return this.renderSingleComment(newComment, session?.userId);
     }
 
     @Get('post/:postId')
@@ -169,12 +169,32 @@ export class CommentsController {
         `
     }
 
-    private renderSingleComment(comment: Comment) {
+    private renderSingleComment(comment: Comment, UserId?: number) {
+        const isDeleted = comment.content === '[Comentario borrado]'
+        const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
+
         return `
             <div class="comment-wrapper">
                 <div class="comment-content" style="margin-left: 10px;">
                     <strong> ${comment.author.name}</strong>
                     ${comment.content}
+                </div>
+                <div class="comment-actions">
+                    ${canEdit ? `
+                        <button
+                            hx-get="/comments/${comment.id}/edit"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML">
+                            Editar
+                        </button>
+                        <button
+                            hx-delete="/comments/${comment.id}"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML"
+                            hx-confirm="¿Borrar comentario?">
+                            Eliminar
+                        </button>
+                    ` : ''}
                 </div>
                 <details>
                     <summary> Responder </summary>
@@ -211,11 +231,17 @@ export class CommentsController {
         const isDeleted = comment.content === '[Comentario borrado]';
         const canEdit = !isDeleted && (comment.author?.id === userId);
 
+        const created = new Date(comment.createdAt);
+        const updated = new Date(comment.updatedAt);
+        // Compare times
+        const wasEdited = updated.getTime() > (created.getTime() + 1000);
+
         return `
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <small>
-                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong> ${`[Editado: ${new Date(comment.updatedAt).toLocaleDateString()}]`}
+                        <strong> ${comment.author.name} | ${new Date(comment.createdAt).toLocaleDateString()} </strong>
+                        ${ wasEdited ? `[Editado: ${updated.toLocaleDateString()}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
                 </div>

@@ -156,10 +156,18 @@ export class PostsController {
     private renderPostCard(post: any, userId?: number) {
         const canEdit = post.author?.id === userId
 
+        const created = new Date(post.createdAt);
+        const updated = new Date(post.updatedAt);
+        // Check if updated time is later than created time (by at least 1 second to be safe)
+        const isEdited = updated.getTime() > (created.getTime() + 1000);
+
         return `
             <div class="post" id="post-${post.id}">
                 <h2> ${post.title} </h2>
-                <small> ${post.author.name} | ${new Date(post.createdAt).toLocaleDateString()} </small>
+                <small>
+                    ${post.author.name} | ${new Date(post.createdAt).toLocaleDateString()}
+                    ${isEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
+                </small>
                 <p> ${post.content} </p>
 
                 ${ canEdit ? `
