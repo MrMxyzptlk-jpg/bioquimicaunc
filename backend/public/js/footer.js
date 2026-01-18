@@ -5,6 +5,7 @@ function loadFooter() {
     }
 
     const footerHTML = `
+        <div id="flash-errors"></div>
         <footer class="site-footer">
             <p class="footer-quote">
                 La educación no es algo que se imparte, sino que se comparte

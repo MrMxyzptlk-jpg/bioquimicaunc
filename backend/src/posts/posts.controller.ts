@@ -9,6 +9,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 
 import { User } from '../users/entities/user.entity';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
+import { timeAgo } from '../utils/time';
 
 @Controller('posts')
 export class PostsController {
@@ -180,8 +181,8 @@ export class PostsController {
             <div class="post" id="post-${post.id}">
                 <h2> ${post.title} </h2>
                 <small>
-                    ${post.author.name} | ${new Date(post.createdAt).toLocaleDateString()}
-                    ${isEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
+                    ${post.author.name} | ${timeAgo(post.createdAt)}
+                    ${isEdited ? `[Editado: ${timeAgo(post.updatedAt)}]` : ''}
                 </small>
                 <p> ${post.content} </p>
 

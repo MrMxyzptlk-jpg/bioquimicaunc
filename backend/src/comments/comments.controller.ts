@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
+import { timeAgo } from '../utils/time';
 
 import { Comment } from './entities/comment.entity'
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('comments')
 export class CommentsController {
@@ -19,6 +21,7 @@ export class CommentsController {
     ) {}
 
     @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 comments/min max
     @Post()
     @Header('Content-Type', 'text/html')
     async create(@Body() createCommentDto: CreateCommentDto, @Session() session: Record<string, any>) {
@@ -116,6 +119,7 @@ export class CommentsController {
     @UseGuards(AuthenticatedGuard)
     @Put(':id')
     @Header('Content-Type', 'text/html')
+    @Throttle({ default: { limit: 5, ttl: 60000 } }) // 3 edits/min max
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() UpdateCommentDto: UpdateCommentDto,
@@ -151,8 +155,8 @@ export class CommentsController {
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="margin-left: 10px;">
                     <small class="comment-details">
-                        <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
-                        ${ isEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
+                        <strong>${comment.author.name}</strong> | ${timeAgo(comment.createdAt)}
+                        ${ isEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
 
@@ -219,8 +223,8 @@ export class CommentsController {
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <small class="comment-details">
-                        <strong> ${comment.author.name} </strong> | ${new Date(comment.createdAt).toLocaleDateString()}
-                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
+                        <strong> ${comment.author.name} </strong> | ${timeAgo(comment.createdAt)}
+                        ${ wasEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
                 </div>

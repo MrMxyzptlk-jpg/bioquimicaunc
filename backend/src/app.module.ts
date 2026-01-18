@@ -12,12 +12,20 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CsrfController } from './csrf/csrf.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+
+    ThrottlerModule.forRoot([{
+        ttl: 60000,
+        limit: 20,
+    }]),
+
     // Load the Environment Variables
     ConfigModule.forRoot({
         isGlobal: true,
@@ -49,6 +57,9 @@ import { CsrfController } from './csrf/csrf.controller';
     AuthModule,
   ],
   controllers: [CsrfController],
-  providers: [],
+  providers: [{
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard
+  }],
 })
 export class AppModule {}
