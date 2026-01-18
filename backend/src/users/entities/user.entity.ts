@@ -8,13 +8,13 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
+    @Column({ length: 254, unique: true })
     email: string;
 
-    @Column()
+    @Column({ length: 100 })
     password: string;
 
-    @Column({ default: 'User' })
+    @Column({ length: 50, default: 'User' })
     name: string;
 
     @CreateDateColumn()

@@ -12,6 +12,7 @@ import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
+import { escapeHtml } from '../utils/escapeHtml';
 
 @Controller('posts')
 export class PostsController {
@@ -138,9 +139,9 @@ export class PostsController {
                     class="forum-form">
 
                     <input type="hidden" name="category" value="${post.category}" required>
-                    <input name="title" value="${post.title}" required data-maxlength="120" maxlength="120">
+                    <input name="title" value="${escapeHtml(post.title)}" required data-maxlength="120" maxlength="120">
                     <small class="char-counter"></small>
-                    <textarea name="content" required data-maxlength="5000" maxlength="5000">${post.content}</textarea>
+                    <textarea name="content" required data-maxlength="5000" maxlength="5000">${escapeHtml(post.content)}</textarea>
                     <small class="char-counter"></small>
 
                     <div class="post-actions">
@@ -185,12 +186,12 @@ export class PostsController {
 
         return `
             <div class="post" id="post-${post.id}">
-                <h2> ${post.title} </h2>
+                <h2> ${escapeHtml(post.title)} </h2>
                 <small>
                     ${post.author.name} | ${timeAgo(post.createdAt)}
                     ${isEdited ? `[Editado: ${timeAgo(post.updatedAt)}]` : ''}
                 </small>
-                <p> ${post.content} </p>
+                <p> ${escapeHtml(post.content)} </p>
 
                 ${ canEdit ? `
                     <div class="post-actions">

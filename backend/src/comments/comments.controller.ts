@@ -11,6 +11,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Throttle } from '@nestjs/throttler';
+import { escapeHtml } from '../utils/escapeHtml';
 
 @Controller('comments')
 export class CommentsController {
@@ -93,13 +94,13 @@ export class CommentsController {
                     hx-put="/comments/${comment.id}"
                     hx-target="#comment-${comment.id}"
                     hx-swap="outerHTML"
-                    class="comment-edit-form">
+                    class="comment-form">
 
                     <textarea
                         name="content"
                         required
                         data-maxlength="1000"
-                        maxlength="1000">${comment.content}</textarea>
+                        maxlength="1000">${escapeHtml(comment.content)}</textarea>
                     <small class="char-counter"></small>
 
                     <div class="comment-actions">
@@ -158,7 +159,7 @@ export class CommentsController {
                         <strong>${comment.author.name}</strong> | ${timeAgo(comment.createdAt)}
                         ${ isEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
-                    <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
+                    <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(comment.content)}</p>
 
                 </div>
                 <div class="comment-actions">
@@ -226,7 +227,7 @@ export class CommentsController {
                         <strong> ${comment.author.name} </strong> | ${timeAgo(comment.createdAt)}
                         ${ wasEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
-                    <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
+                    <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(comment.content)}</p>
                 </div>
 
                 ${ canEdit ? `
@@ -266,8 +267,8 @@ export class CommentsController {
                                 name="content"
                                 placeholder="Respuesta..."
                                 required
-                                data-maxlength="800"
-                                maxlength="800"></textarea>
+                                data-maxlength="1000"
+                                maxlength="1000"></textarea>
                             <small class="char-counter"></small>
                             <button type="submit" style="font-size:0.8rem;"> Enviar </button>
                         </form>

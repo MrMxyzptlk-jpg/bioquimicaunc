@@ -169,11 +169,11 @@ LAYOUT & BACKGROUNDS
     }
 
     .layout-development {
+        height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 90vh;
         gap: 1.5rem;
         padding: 4rem;
         box-sizing: border-box;
@@ -554,7 +554,7 @@ UTILITIES & FOOTER
         justify-items: center;
 
         width: 100%;
-        max-width: none;
+        max-width: 800px;
     }
 
     .subject-btn {
@@ -626,6 +626,7 @@ FORMS & INPUTS
     .comment-form input,
     .comment-form textarea
     {
+        font-family: system-ui;
         width: 95%;
         padding: 0.7rem;
         font-size: 1rem;
@@ -655,3 +656,19 @@ FORMS & INPUTS
         border-color: transparent;
     }
 
+/* =========================================
+LOADING SPRITE ANIMATION
+========================================= */
+.crow-loader {
+    width: 100px;
+    height: 100px;
+    background-image: url("../assets/flying-crow.svg");
+    background-repeat: no-repeat;
+    background-size: 1000% 100%;
+    animation: crow-sprite 0.8s infinite steps(9) alternate;
+}
+
+@keyframes crow-sprite {
+    from { background-position: 0 0; }
+    to   { background-position: 100% 0; }
+}

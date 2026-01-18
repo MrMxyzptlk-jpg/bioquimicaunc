@@ -7,13 +7,13 @@ export class ForumPost {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    @Column({ length: 120 })
     title: string
 
     @Column({ type: 'text' })
     content: string
 
-    @Column()
+    @Column({ length: 30 })
     category: string
 
     @CreateDateColumn()
