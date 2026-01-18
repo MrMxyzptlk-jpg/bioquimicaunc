@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from "typeorm";
 import { ForumPost } from "../../posts/post.entity";
 import { User } from '../../users/entities/user.entity';
 
@@ -13,7 +13,7 @@ export class Comment {
     @CreateDateColumn()
     createdAt: Date;
 
-    @CreateDateColumn()
+    @UpdateDateColumn()
     updatedAt: Date;
 
     // Relationship: Many Comments -> One Post

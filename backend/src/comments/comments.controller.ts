@@ -145,14 +145,14 @@ export class CommentsController {
 
         const created = new Date(comment.createdAt);
         const updated = new Date(comment.updatedAt);
-        const wasEdited = updated.getTime() > (created.getTime() + 1000); // 1s buffer
+        const isEdited = updated.getTime() > (created.getTime() + 100); // 1s buffer
 
         return `
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="margin-left: 10px;">
                     <small class="comment-details">
                         <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
-                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
+                        ${ isEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
 

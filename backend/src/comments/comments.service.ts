@@ -59,13 +59,13 @@ export class CommentsService {
         });
     }
 
-    async update(id: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
-        await this.commentsRepo.update(id, updateCommentDto);
-        const comment = await this.findOne(id);
+    async update(id: number, newComment: UpdateCommentDto): Promise<Comment> {
+        const comment = await this.commentsRepo.findOne({ where: { id }, relations: ['author', 'post'] });
 
         if (!comment) throw new NotFoundException(`Comment with id ${id} not found after update`);
+        if (newComment.content !== undefined) comment.content = newComment.content;
 
-        return comment;
+        return this.commentsRepo.save(comment);
     }
 
     async remove(id: number): Promise<Comment> {
