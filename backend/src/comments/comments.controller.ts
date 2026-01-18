@@ -139,45 +139,6 @@ export class CommentsController {
         return this.renderSingleComment(comment, session?.userId)
     }
 
-    private renderComment(comment: Comment, UserId?: number) {
-        const isDeleted = comment.content === '[Comentario borrado]'
-        const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
-
-        const created = new Date(comment.createdAt);
-        const updated = new Date(comment.updatedAt);
-        const wasEdited = updated.getTime() > (created.getTime() + 1000); // 1s buffer
-
-        return `
-            <div class="comment-wrapper" id="comment-${comment.id}">
-                <div class="comment">
-                    <small class="comment-details">
-                        <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
-                        ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
-                    </small>
-                    <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
-
-                    <div class="comment-actions">
-                        ${canEdit ? `
-                            <button
-                                hx-get="/comments/${comment.id}/edit"
-                                hx-target="#comment-${comment.id}"
-                                hx-swap="outerHTML">
-                                Editar
-                            </button>
-                            <button
-                                hx-delete="/comments/${comment.id}"
-                                hx-target="#comment-${comment.id}"
-                                hx-swap="outerHTML"
-                                hx-confirm="¿Borrar comentario?">
-                                Eliminar
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `
-    }
-
     private renderSingleComment(comment: Comment, UserId?: number) {
         const isDeleted = comment.content === '[Comentario borrado]'
         const canEdit = (!isDeleted) && (comment.author?.id === UserId); //can edit if NOT deleted and current user is the author
@@ -193,7 +154,7 @@ export class CommentsController {
                         <strong>${comment.author.name}</strong> | ${new Date(comment.createdAt).toLocaleDateString()}
                         ${ wasEdited ? `[Editado: ${updated.toLocaleString()}]` : ''}
                     </small>
-                    <p class="comment-content ${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
+                    <p class="${isDeleted ? 'text-muted' : ''}">${comment.content}</p>
 
                 </div>
                 <div class="comment-actions">
