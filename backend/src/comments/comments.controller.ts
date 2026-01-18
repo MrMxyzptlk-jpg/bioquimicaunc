@@ -119,7 +119,7 @@ export class CommentsController {
     @UseGuards(AuthenticatedGuard)
     @Put(':id')
     @Header('Content-Type', 'text/html')
-    @Throttle({ default: { limit: 5, ttl: 60000 } }) // 3 edits/min max
+    @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 edits/min max
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() UpdateCommentDto: UpdateCommentDto,

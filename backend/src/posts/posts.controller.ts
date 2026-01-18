@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards, NotFoundException, ForbiddenException, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -10,6 +10,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from '../users/entities/user.entity';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
+import { Throttle } from '@nestjs/throttler';
+import type { Response } from 'express';
 
 @Controller('posts')
 export class PostsController {
@@ -22,11 +24,13 @@ export class PostsController {
     // 1. Create Post (HTMX Style)
     // Returns a single HTML card to append to the list
     @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 1, ttl: 60000 } }) // 1 post/min max
     @Post()
     @Header('Content-Type', 'text/html')
     async create(
         @Body() body: CreatePostDto,
-        @Session() session: Record<string, any>
+        @Session() session: Record<string, any>,
+        @Res({ passthrough: true }) res: Response
     ) {
         // Check if user is logged in
         if (!session.userId) {
@@ -39,6 +43,7 @@ export class PostsController {
 
         // Pass user to service
         const post = await this.postsService.create(body, user);
+        res.header('HX-Trigger', 'post-created');
         return this.renderPostCard(post, session.userId); // Pass session.userId so the new post shows buttons immediately
     }
 
@@ -112,6 +117,7 @@ export class PostsController {
     }
 
     @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 2, ttl: 60000 } }) // 2 edits/min max
     @Get(':id/edit')
     @Header('Content-Type', 'text/html')
     async editForm(

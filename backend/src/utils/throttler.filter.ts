@@ -9,7 +9,7 @@ export class HtmxThrottlerFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
 
-const htmlError = `
+        const htmlError = `
             <div id="flash-errors" hx-swap-oob="true">
                 <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999;">
 
@@ -20,7 +20,7 @@ const htmlError = `
                             &times;
                         </button>
 
-                        <img src="./assets/throttler-alert.png" alt="ALERTA" style="max-width: 300px; width: auto">
+                        <img src="./assets/throttler-alert.svg" alt="ALERTA" style="max-width: 300px; width: auto">
 
                         <p style="color: #666; margin-bottom: 20px; line-height: 1.5;">
                             Estás realizando muchas acciones seguidas. Por favor, espera unos segundos.
@@ -36,6 +36,6 @@ const htmlError = `
             </div>
         `;
 
-        response.status(HttpStatus.OK).send(htmlError);
+        response.status(HttpStatus.OK).header('HX-Reswap', 'none').send(htmlError);
     }
 }
