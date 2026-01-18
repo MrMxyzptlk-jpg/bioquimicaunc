@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="./js/menu.js"></script>
+    <script src="./js/char_counter.js"></script>
     <script src="./js/footer.js"></script>
 </head>
 <body>
@@ -74,8 +75,23 @@
             <input type="hidden" name="user" value="ESTUDIANDE_UNC">
             <input type="hidden" id="categoryInput" name="category" value="Ciclo Básico">
 
-            <input type="text" id="title" name="title" placeholder="Título" required>
-            <textarea name="content" id="postContent" rows="4" placeholder="Escribe tu consejo..." required></textarea>
+            <input
+                type="text" id="title"
+                name="title"
+                placeholder="Título"
+                required
+                data-maxlength="120"
+                maxlength="120">
+            <small class="char-counter"></small>
+            <textarea
+                name="content"
+                id="postContent"
+                rows="4"
+                placeholder="Escribe tu consejo..."
+                required
+                data-maxlength="5000"
+                maxlength="5000"></textarea>
+            <small class="char-counter"></small>
             <button type="submit"> Publicar </button>
         </form>
 

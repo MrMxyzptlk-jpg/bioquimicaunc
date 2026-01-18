@@ -92,7 +92,12 @@ export class CommentsController {
                     hx-swap="outerHTML"
                     class="comment-edit-form">
 
-                    <textarea name="content" required>${comment.content}</textarea>
+                    <textarea
+                        name="content"
+                        required
+                        data-maxlength="1000"
+                        maxlength="1000">${comment.content}</textarea>
+                    <small class="char-counter"></small>
 
                     <div class="comment-actions">
                         <button type="submit"> Guardar </button>
@@ -219,7 +224,8 @@ export class CommentsController {
 
                         <input type="hidden" name="postId" value="${comment.post.id}">
                         <input type="hidden" name="parentId" value="${comment.id}">
-                        <textarea name="content" required></textarea>
+                        <textarea name="content" required data-maxlength="1000" maxlength="1000"></textarea>
+                        <small class="char-counter"></small>
                         <button type="submit"> Enviar </button>
                     </form>
                 </details>
@@ -290,7 +296,14 @@ export class CommentsController {
                             <input type="hidden" name="postId" value="${comment.post ? comment.post.id : comment.postId}">
                             <input type="hidden" name="parentId" value="${comment.id}">
 
-                            <textarea type="text" name="content" placeholder="Respuesta..." required></textarea>
+                            <textarea
+                                type="text"
+                                name="content"
+                                placeholder="Respuesta..."
+                                required
+                                data-maxlength="800"
+                                maxlength="800"></textarea>
+                            <small class="char-counter"></small>
                             <button type="submit" style="font-size:0.8rem;"> Enviar </button>
                         </form>
                     </details>

@@ -130,9 +130,11 @@ export class PostsController {
                     hx-swap="outerHTML"
                     class="forum-form">
 
-                    <input name="title" value="${post.title}" required>
-                    <textarea name="content" required>${post.content}</textarea>
                     <input type="hidden" name="category" value="${post.category}" required>
+                    <input name="title" value="${post.title}" required data-maxlength="120" maxlength="120">
+                    <small class="char-counter"></small>
+                    <textarea name="content" required data-maxlength="5000" maxlength="5000">${post.content}</textarea>
+                    <small class="char-counter"></small>
 
                     <div class="post-actions">
                         <button type="submit"> Guardar </button>
@@ -220,7 +222,8 @@ export class PostsController {
 
                             <input type="hidden" name="postId" value="${post.id}">
 
-                            <textarea type="text" name="content" placeholder="Escribe un comentario..." required></textarea>
+                            <textarea type="text" name="content" placeholder="Escribe un comentario..." required data-maxlength="1000" maxlength="1000"></textarea>
+                            <small class="char-counter"></small>
                             <button type="submit" class="comment-btn"> Enviar </button>
                         </form>
                     </details>

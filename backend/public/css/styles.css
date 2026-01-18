@@ -444,7 +444,7 @@ COMMENTS (Updated for Hierarchy & Tooltips)
         text-align: left;
         padding-top: 10px;
         font-size: 1.05rem;
-        border-bottom: 1px solid #000;
+        border-top: 1px solid #000;
     }
 
     .comment-details {
@@ -579,6 +579,26 @@ UTILITIES & FOOTER
     }
 
     .text-muted { opacity: 0.6; font-style: italic; }
+
+    button.htmx-request {
+        opacity: 0.8;
+        pointer-events: none;
+    }
+
+    .char-counter {
+        display: block;
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .char-counter.limit-warning {
+        color: #d9cb06; /* amber */
+    }
+
+    .char-counter.limit-exceeded {
+        color: #dc7b26; /* red */
+    }
 
 /* =========================================
 FORMS & INPUTS
