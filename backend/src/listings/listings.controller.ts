@@ -266,6 +266,17 @@ export class ListingsController {
             <div class="listing" id="listing-${listing.id}">
                 <h2> ${escapeHtml(listing.title)} </h2>
                 <p> ${escapeHtml(listing.content)} </p>
+                <small>
+                    <ul class="fa-ul">
+                    <li>
+                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Precio: ${listing.price}
+                    </li>
+                    <li>
+                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Modalidad: ${escapeHtml(listing.modality.join(', '))}
+                    <li>
+                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Materias: ${escapeHtml(listing.subjects.join(', '))}
+                    </ul>
+                </small>
 
                 ${ canEdit ? `
                     <div class="listing-actions">
