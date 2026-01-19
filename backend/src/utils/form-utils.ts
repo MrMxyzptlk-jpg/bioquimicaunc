@@ -5,13 +5,17 @@ export function renderCheckboxGroup<T extends Record<string, string>>(
 ) {
     return Object.entries(enumObj)
         .map(([key, label]) => {
-            const checked = selected.includes(key) ? 'checked' : '';
+            // Ensure we compare Values to Values
+            const checked = selected.includes(label) ? 'checked' : '';
+
             return `
                 <label class="checkbox-item">
-                    <input type="checkbox"
-                           name="${name}"
-                           value="${key}"
-                           ${checked}>
+                    <input
+                        type="checkbox"
+                        name="${name}[]"
+                        value="${label}"
+                        ${checked}
+                    >
                     ${label}
                 </label>
             `;

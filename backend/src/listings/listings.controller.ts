@@ -11,7 +11,6 @@ import { User } from '../users/entities/user.entity';
 
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
-import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { escapeHtml } from '../utils/escapeHtml';
 import { renderCheckboxGroup } from '../utils/form-utils';
@@ -85,7 +84,6 @@ export class ListingsController {
     // 1. Create Listing (HTMX Style)
     // Returns a single HTML card to append to the list
     @UseGuards(AuthenticatedGuard)
-    @Throttle({ default: { limit: 1, ttl: 120000 } }) // 0.5 Listing/min max
     @Post()
     @Header('Content-Type', 'text/html')
     async create(
@@ -176,7 +174,6 @@ export class ListingsController {
     }
 
     @UseGuards(AuthenticatedGuard)
-    @Throttle({ default: { limit: 2, ttl: 60000 } }) // 2 edits/min max
     @Get(':id/edit')
     @Header('Content-Type', 'text/html')
     async editForm(

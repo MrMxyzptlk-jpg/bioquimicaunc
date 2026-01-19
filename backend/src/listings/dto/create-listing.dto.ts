@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsString, MaxLength, ArrayNotEmpty } from "class-validator";
 import { ListingModality, ListingSubject } from "../entities/listing.entity";
 import { Transform } from "class-transformer";
 
@@ -23,6 +23,7 @@ export class CreateListingDto {
         return value
     })
     @IsArray()
+    @ArrayNotEmpty({ message: 'Debe seleccionar al menos una modalidad' })
     @IsEnum(ListingModality, { each: true })
     modality: ListingModality[];
 
@@ -32,6 +33,7 @@ export class CreateListingDto {
         return value
     })
     @IsArray()
+    @ArrayNotEmpty({ message: 'Debe seleccionar al menos una modalidad' })
     @IsEnum(ListingSubject, { each: true })
     subjects: ListingSubject[];
 

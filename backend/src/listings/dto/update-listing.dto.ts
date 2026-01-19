@@ -1,7 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength, IsEnum, IsArray } from "class-validator";
+import { IsNotEmpty, IsString, MaxLength, IsEnum, IsArray, ArrayNotEmpty } from "class-validator";
 import { ListingModality, ListingSubject } from "../entities/listing.entity";
-import { Transform } from "class-transformer";
-
 
 export class UpdateListingDto {
     @IsString()
@@ -18,21 +16,13 @@ export class UpdateListingDto {
     @IsNotEmpty()
     price: string;
 
-    @Transform(({ value }) => {
-        if (typeof value === 'string') return [value];
-        if (!value) return [];
-        return value
-    })
     @IsArray()
+    @ArrayNotEmpty()
     @IsEnum(ListingModality, { each: true })
     modality: ListingModality[];
 
-    @Transform(({ value }) => {
-        if (typeof value === 'string') return [value];
-        if (!value) return [];
-        return value
-    })
     @IsArray()
+    @ArrayNotEmpty()
     @IsEnum(ListingSubject, { each: true })
     subjects: ListingSubject[];
 }
