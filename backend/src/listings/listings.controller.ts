@@ -1,0 +1,247 @@
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, HttpCode, Header, Session, UnauthorizedException, UseGuards, NotFoundException, ForbiddenException, Res } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { ListingsService } from './listings.service';
+import { ListingsPost } from './entities/listing.entity';
+import { CreateListingDto } from './dto/create-listing.dto';
+import { UpdateListingDto } from './dto/update-listing.dto';
+
+import { User } from '../users/entities/user.entity';
+import { AuthenticatedGuard } from '../auth/authenticated.guard';
+import { timeAgo } from '../utils/time';
+import { Throttle } from '@nestjs/throttler';
+import type { Response } from 'express';
+import { escapeHtml } from '../utils/escapeHtml';
+
+@Controller('listings')
+export class ListingsController {
+    constructor(
+        private readonly ListingsService: ListingsService,
+        @InjectRepository(User)
+        private readonly usersRepo: Repository<User>
+    ) {}
+
+    // 1. Create Listing (HTMX Style)
+    // Returns a single HTML card to append to the list
+    @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 1, ttl: 120000 } }) // 0.5 Listing/min max
+    @Post()
+    @Header('Content-Type', 'text/html')
+    async create(
+        @Body() body: CreateListingDto,
+        @Session() session: Record<string, any>,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        // Check if user is logged in
+        if (!session.userId) {
+            return `<div class="error"> Debes iniciar sesión para publicar. </div>`
+        }
+
+        // Find the real user
+        const user = await this.usersRepo.findOneBy({ id: session.userId });
+        if (!user) throw new UnauthorizedException('Usuario no válido');
+
+        // Pass user to service
+        const listing = await this.ListingsService.create(body, user);
+        res.header('HX-Trigger', 'listing-created');
+        return this.renderListingCard(listing, session.userId); // Pass session.userId so the new listing shows buttons immediately
+    }
+
+    // 2. Get JSON (Optional, kept for debugging)
+    @Get('json')
+    findByCategory(@Query('category') category: string): Promise<ListingsPost[]> {
+        return this.ListingsService.findByCategory(category);
+    }
+
+    @Get('fragments')
+    @Header('Content-Type', 'text/html')
+    async findByCategoryFragment(
+        @Query('category') category: string,
+        @Session() session: Record<string, any>
+    ): Promise<string> {
+        const listings = await this.ListingsService.findByCategory(category);
+
+        if (listings.length === 0) {
+            return `<p class="signal"> No hay publicaciones en ${category}. ¡Sé el primero! </p>`
+        }
+
+        // Conver all listings to HTML strings
+        return listings.map(listing => this.renderListingCard(listing, session.userId)).join('');
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Get(':id/fragment')
+    @Header('Content-Type', 'text/html')
+    async listingFragment(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const listing = await this.ListingsService.findOne(id);
+        if (!listing) throw new NotFoundException();
+        return this.renderListingCard(listing, session.userId);
+    }
+
+    @Get(':id/comments-button')
+    getCommentsButton(@Param('id') id: string) {
+        return this.renderShowButton(+id);
+    }
+
+    // Helper method for the button HTML
+    private renderShowButton(listingId: number) {
+        return `
+            <button
+                hx-get="/comments/listing/${listingId}"
+                hx-target="#comments-list-${listingId}"
+                hx-swap="innerHTML"
+                class="listing-action-btn">
+                Ver Comentarios
+            </button>
+        `
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Put(':id')
+    @Header('Content-Type', 'text/html')
+    async update(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: UpdateListingDto,
+        @Session() session: Record<string, any>
+    ) {
+        const listing = await this.ListingsService.findOne(id);
+
+        if (!listing) throw new NotFoundException('Listing no encontrado');
+        if (listing.author.id !== session.userId) throw new ForbiddenException('No puedes editar este listing');
+
+        const updated = await this.ListingsService.update(id, body);
+        return this.renderListingCard(updated, session.userId);
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 2, ttl: 60000 } }) // 2 edits/min max
+    @Get(':id/edit')
+    @Header('Content-Type', 'text/html')
+    async editForm(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const listing = await this.ListingsService.findOne(id);
+
+        if (!listing) throw new NotFoundException();
+        if (listing.author.id !== session.userId) throw new ForbiddenException();
+
+        return `
+            <div class="listing" id="listing-${listing.id}">
+                <form
+                    hx-put="/listings/${listing.id}"
+                    hx-target="#listing-${listing.id}"
+                    hx-swap="outerHTML"
+                    class="forum-form">
+
+                    <input type="hidden" name="category" value="${listing.category}" required>
+                    <input name="title" value="${escapeHtml(listing.title)}" required data-maxlength="120" maxlength="120">
+                    <small class="char-counter"></small>
+                    <textarea name="content" required data-maxlength="5000" maxlength="5000">${escapeHtml(listing.content)}</textarea>
+                    <small class="char-counter"></small>
+
+                    <div class="listing-actions">
+                        <button type="submit"> Guardar </button>
+                        <button type="button"
+                            hx-get="/listings/${listing.id}/fragment"
+                            hx-target="#listing-${listing.id}"
+                            hx-swap="outerHTML">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Delete(':id')
+    @HttpCode(200)
+    async delete(
+        @Param('id', ParseIntPipe) id: number,
+        @Session() session: Record<string, any>
+    ) {
+        const listing = await this.ListingsService.findOne(id);
+
+        if (!listing) throw new NotFoundException('Listing no encontrado');
+
+        if (listing.author.id !== session.userId) throw new ForbiddenException('No puedes borrar este listing');
+
+        await this.ListingsService.remove(id);
+        return ""; // empty string for HTMX to swap in the HTML
+    }
+
+    // Helper Method
+    private renderListingCard(listing: any, userId?: number) {
+        const canEdit = listing.author?.id === userId
+
+        const created = new Date(listing.createdAt);
+        const updated = new Date(listing.updatedAt);
+        // Check if updated time is later than created time (by at least 1 second to be safe)
+        const isEdited = updated.getTime() > (created.getTime() + 1000);
+
+        return `
+            <div class="listing" id="listing-${listing.id}">
+                <h2> ${escapeHtml(listing.title)} </h2>
+                <small>
+                    ${listing.author.name} | ${timeAgo(listing.createdAt)}
+                    ${isEdited ? `[Editado: ${timeAgo(listing.updatedAt)}]` : ''}
+                </small>
+                <p> ${escapeHtml(listing.content)} </p>
+
+                ${ canEdit ? `
+                    <div class="listing-actions">
+                        <button
+                            hx-delete="/listings/${listing.id}"
+                            hx-target="#listing-${listing.id}"
+                            hx-swap="outerHTML"
+                            hx-confirm="¿Borrar listing?"
+                            class="listing-action-btn">
+                            Eliminar
+                        </button>
+                        <button
+                            hx-get="/listings/${listing.id}/edit"
+                            hx-target="#listing-${listing.id}"
+                            hx-swap="outerHTML"
+                            class="listing-action-btn">
+                            Editar
+                        </button>
+                    </div>
+                ` : ''}
+
+                <div class="comment-wrapper" style="width: 100%;">
+                    <details>
+                        <summary> Comentar </summary>
+
+                        <form
+                            hx-listing="/comments"
+                            hx-target="#comments-list-${listing.id}"
+                            hx-swap="beforeend"
+                            hx-on::before-request="
+                                if (!document.querySelector('#comments-list-${listing.id} .comment-wrapper')) {
+                                    htmx.ajax('GET', '/comments/listing/${listing.id}', '#comments-list-${listing.id}');
+                                }"
+                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
+                            class="comment-form">
+
+                            <input type="hidden" name="listingId" value="${listing.id}">
+
+                            <textarea type="text" name="content" placeholder="Escribe un comentario..." required data-maxlength="1000" maxlength="1000"></textarea>
+                            <small class="char-counter"></small>
+                            <button type="submit" class="comment-btn"> Enviar </button>
+                        </form>
+                    </details>
+                </div>
+
+                <div id="comments-list-${listing.id}" class="comments-section">
+                    ${this.renderShowButton(listing.id)}
+                </div>
+            </div>
+        `
+    }
+
+}

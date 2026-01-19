@@ -8,12 +8,17 @@ import { Comment } from './comments/entities/comment.entity';
 import { ForumPost } from './posts/post.entity';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
+import { ListingsModule } from './listings/listings.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { ListingsPost } from './listings/entities/listing.entity';
+import { Review } from './reviews/entities/review.entity';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
 import { CsrfController } from './csrf/csrf.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -43,16 +48,20 @@ import { APP_GUARD } from '@nestjs/core';
             username: configService.get<string>('DB_USERNAME'),
             password: configService.get<string>('DB_PASSWORD'),
             database: configService.get<string>('DB_DATABASE'),
-            entities: [ForumPost, Comment, User],
+            entities: [ForumPost, Comment, User, ListingsPost, Review],
             synchronize: true,
         }),
     }),
+
+    UsersModule,
 
     PostsModule,
 
     CommentsModule,
 
-    UsersModule,
+    ListingsModule,
+
+    ReviewsModule,
 
     AuthModule,
   ],

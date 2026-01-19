@@ -11,7 +11,7 @@ function loadHeader(pageTitle) {
                 <a href="/index.html"> Inicio </a><br>
                 <a href="/intro.html"> Introducción </a><br>
                 <a href="/foro.html"> Foro </a><br>
-                <a href="/particulares.html"> Particulares </a><br>
+                <a href="/anuncios.html"> Anunciate! </a><br>
                 <a href="/recursos.html"> Recursos </a><br>
                 <a href="/developing.html"> Derechos </a><br>
             </nav>
