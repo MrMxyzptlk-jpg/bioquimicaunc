@@ -16,33 +16,39 @@ export class ListingsService {
     ){}
 
     // Create a Listing
-    async create(data: CreateListingDto, user: User): Promise<ListingsPost> {
-        const forumListing = this.listingRepository.create({
+    async create(data: CreateListingDto, author: User): Promise<ListingsPost> {
+        const listingPost = this.listingRepository.create({
             title: data.title,
             content: data.content,
+            price: data.price,
+            modality: data.modality,
+            subjects: data.subjects,
             category: data.category,
-            author: user,
+            author
         });
-        return this.listingRepository.save(forumListing)
+        return this.listingRepository.save(listingPost)
     }
 
     // Update Listings
     async update(id: number, data: UpdateListingDto): Promise<ListingsPost> {
-        const forumListing = await this.listingRepository.findOne({
+        const listingPost = await this.listingRepository.findOne({
             where: { id },
         });
 
-        if (!forumListing) throw new NotFoundException(`Note ${id} not found`);
-        if (data.title !== undefined) forumListing.title = data.title;
-        if (data.content !== undefined) forumListing.content = data.content;
+        if (!listingPost) throw new NotFoundException(`Listing ${id} not found`);
+        if (data.title !== undefined) listingPost.title = data.title;
+        if (data.content !== undefined) listingPost.content = data.content;
+        if (data.price !== undefined) listingPost.price = data.price;
+        if (Array.isArray(data.modality) && data.modality.length > 0) listingPost.modality = data.modality;
+        if (Array.isArray(data.subjects) && data.subjects.length > 0) listingPost.subjects = data.subjects;
 
-        return this.listingRepository.save(forumListing);
+        return this.listingRepository.save(listingPost);
     }
 
     // Delete a Listing
     async remove(id: number): Promise<void> {
         const result = await this.listingRepository.delete(id);
-        if (result.affected === 0 ) throw new NotFoundException(`Note ${id} not found`);
+        if (result.affected === 0 ) throw new NotFoundException(`Listing ${id} not found`);
     }
 
     // Filter by category

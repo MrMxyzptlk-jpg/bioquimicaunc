@@ -32,7 +32,7 @@ export class ReviewsController {
         if (!user) throw new UnauthorizedException();
 
         const newReview = await this.reviewsService.create(createReviewDto, user);
-        return this.renderSingleReview(newReview, session?.userId);
+        return this.renderSingleReview(newReview, session?.userId, session?.isAdmin);
     }
 
     @Get('listing/:listingId')
@@ -68,7 +68,7 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
 
         const deletedReview = await this.reviewsService.remove(id);
         const allReviews = await this.reviewsService.findByPost(deletedReview.listing.id);
@@ -85,7 +85,7 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
 
         return `
             <div class="review-wrapper" id="review-${review.id}">
@@ -128,10 +128,10 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
 
         const updatedReview = await this.reviewsService.update(id, UpdateReviewDto);
-        return this.renderSingleReview(updatedReview, session.userId);
+        return this.renderSingleReview(updatedReview, session.userId, session?.isAdmin);
     }
 
     @Get(':id')
@@ -140,12 +140,12 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
         if (!review) throw new NotFoundException();
 
-        return this.renderSingleReview(review, session?.userId)
+        return this.renderSingleReview(review, session?.userId, session?.isAdmin)
     }
 
-    private renderSingleReview(review: Review, UserId?: number) {
+    private renderSingleReview(review: Review, UserId?: number, isAdmin?: boolean) {
         const isDeleted = review.content === '[Comentario borrado]'
-        const canEdit = (!isDeleted) && (review.author?.id === UserId); //can edit if NOT deleted and current user is the author
+        const canEdit = (!isDeleted) && (review.author?.id === UserId || isAdmin); //can edit if NOT deleted and current user is the author
 
         const created = new Date(review.createdAt);
         const updated = new Date(review.updatedAt);
@@ -178,24 +178,7 @@ export class ReviewsController {
                         </button>
                     ` : ''}
                 </div>
-                <details>
-                    <summary> Responder </summary>
-                    <form
-                        hx-listing="/reviews"
-                        hx-target="#children-container-${review.id}"
-                        hx-swap="beforeend"
-                        hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
-                        class="review-form">
 
-                        <input type="hidden" name="listingId" value="${review.listing.id}">
-                        <input type="hidden" name="parentId" value="${review.id}">
-                        <textarea name="content" required data-maxlength="1000" maxlength="1000"></textarea>
-                        <small class="char-counter"></small>
-                        <button type="submit"> Enviar </button>
-                    </form>
-                </details>
-
-                <div id="children-container-${review.id}"></div>
 
             </div>
         `;

@@ -1,5 +1,6 @@
-import { Optional } from "@nestjs/common";
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { ListingModality, ListingSubject } from "../entities/listing.entity";
+import { Transform } from "class-transformer";
 
 export class CreateListingDto {
     @IsString()
@@ -14,14 +15,31 @@ export class CreateListingDto {
 
     @IsString()
     @IsNotEmpty()
-    category: string;
-
-    @Optional()
     price: string;
 
-    @Optional()
-    modality?: string;
+    @Transform(({ value }) => {
+        if (typeof value === 'string') return [value];
+        if (!value) return [];
+        return value
+    })
+    @IsArray()
+    @IsEnum(ListingModality, { each: true })
+    modality: ListingModality[];
 
-    @IsNumber()
-    rating?: number;
+    @Transform(({ value }) => {
+        if (typeof value === 'string') return [value];
+        if (!value) return [];
+        return value
+    })
+    @IsArray()
+    @IsEnum(ListingSubject, { each: true })
+    subjects: ListingSubject[];
+
+    @IsString()
+    @IsNotEmpty()
+    category: string;
+
+    @IsString()
+    @IsNotEmpty()
+    authorUsername: string;
 }

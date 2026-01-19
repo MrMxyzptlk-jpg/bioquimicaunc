@@ -2,17 +2,19 @@ import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, Query, H
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ListingModality, ListingSubject } from './entities/listing.entity';
 import { ListingsService } from './listings.service';
 import { ListingsPost } from './entities/listing.entity';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
-
 import { User } from '../users/entities/user.entity';
+
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { escapeHtml } from '../utils/escapeHtml';
+import { renderCheckboxGroup } from '../utils/form-utils';
 
 @Controller('listings')
 export class ListingsController {
@@ -21,6 +23,64 @@ export class ListingsController {
         @InjectRepository(User)
         private readonly usersRepo: Repository<User>
     ) {}
+
+    //@UseGuards(AuthenticatedGuard) This guard triggers the login unintentionally
+    @Get('admin/form')
+    @Header('Content-Type', 'text/html')
+    adminCreateForm(@Session() session: Record<string, any>) {
+        if (!session || !session.isAdmin) return ''; // silently render nothing
+
+        return `
+            <form
+                class="forum-form"
+                hx-post="/listings"
+                hx-target="#listings-posts"
+                hx-swap="afterbegin"
+                hx-on::listing-created="this.reset()">
+
+                <input type="hidden" id="categoryInput" name="category" value="Particulares">
+
+                <input
+                    name="title"
+                    placeholder="Título del anuncio"
+                    required
+                    maxlength="120"
+                    data-maxlength="120">
+                <small class="char-counter"></small>
+
+                <textarea
+                    name="content"
+                    placeholder="Descripción del servicio"
+                    required
+                    maxlength="5000"
+                    data-maxlength="5000"></textarea>
+                <small class="char-counter"></small>
+
+                <input
+                    name="price"
+                    placeholder="Precio"
+                    required
+                    maxlength="50"
+                    data-maxlength="50">
+                <small class="char-counter"></small>
+
+                <fieldset>
+                    <legend>Modalidad</legend>
+                    ${renderCheckboxGroup('modality', ListingModality)}
+                </fieldset>
+
+                <fieldset>
+                    <legend>Materias</legend>
+                    ${renderCheckboxGroup('subjects', ListingSubject)}
+                </fieldset>
+                <input
+                    name="authorUsername"
+                    placeholder="Usuario dueño del anuncio" required>
+
+                <button type="submit"> Publicar anuncio </button>
+            </form>
+        `;
+    }
 
     // 1. Create Listing (HTMX Style)
     // Returns a single HTML card to append to the list
@@ -34,18 +94,16 @@ export class ListingsController {
         @Res({ passthrough: true }) res: Response
     ) {
         // Check if user is logged in
-        if (!session.userId) {
-            return `<div class="error"> Debes iniciar sesión para publicar. </div>`
-        }
+        if (!session.userId || !session.isAdmin) throw new ForbiddenException();
 
-        // Find the real user
-        const user = await this.usersRepo.findOneBy({ id: session.userId });
-        if (!user) throw new UnauthorizedException('Usuario no válido');
+        // Set authorship
+        const author = await this.usersRepo.findOne({where: { name: body.authorUsername } });
+        if (!author) throw new NotFoundException(`El usuario "${body.authorUsername}" no existe.`);
 
         // Pass user to service
-        const listing = await this.ListingsService.create(body, user);
+        const listing = await this.ListingsService.create(body, author);
         res.header('HX-Trigger', 'listing-created');
-        return this.renderListingCard(listing, session.userId); // Pass session.userId so the new listing shows buttons immediately
+        return this.renderListingCard(listing, session.userId, session.isAdmin); // Pass session.userId so the new listing shows buttons immediately
     }
 
     // 2. Get JSON (Optional, kept for debugging)
@@ -67,7 +125,7 @@ export class ListingsController {
         }
 
         // Conver all listings to HTML strings
-        return listings.map(listing => this.renderListingCard(listing, session.userId)).join('');
+        return listings.map(listing => this.renderListingCard(listing, session.userId, session.isAdmin)).join('');
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -79,7 +137,7 @@ export class ListingsController {
     ) {
         const listing = await this.ListingsService.findOne(id);
         if (!listing) throw new NotFoundException();
-        return this.renderListingCard(listing, session.userId);
+        return this.renderListingCard(listing, session.userId, session.isAdmin);
     }
 
     @Get(':id/comments-button')
@@ -111,10 +169,10 @@ export class ListingsController {
         const listing = await this.ListingsService.findOne(id);
 
         if (!listing) throw new NotFoundException('Listing no encontrado');
-        if (listing.author.id !== session.userId) throw new ForbiddenException('No puedes editar este listing');
+        if (listing.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException('No puedes editar este listing');
 
         const updated = await this.ListingsService.update(id, body);
-        return this.renderListingCard(updated, session.userId);
+        return this.renderListingCard(updated, session.userId, session.isAdmin);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -128,7 +186,7 @@ export class ListingsController {
         const listing = await this.ListingsService.findOne(id);
 
         if (!listing) throw new NotFoundException();
-        if (listing.author.id !== session.userId) throw new ForbiddenException();
+        if (listing.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
 
         return `
             <div class="listing" id="listing-${listing.id}">
@@ -139,10 +197,38 @@ export class ListingsController {
                     class="forum-form">
 
                     <input type="hidden" name="category" value="${listing.category}" required>
+
                     <input name="title" value="${escapeHtml(listing.title)}" required data-maxlength="120" maxlength="120">
                     <small class="char-counter"></small>
+
                     <textarea name="content" required data-maxlength="5000" maxlength="5000">${escapeHtml(listing.content)}</textarea>
                     <small class="char-counter"></small>
+
+                    <input
+                        name="price"
+                        placeholder="Precio"
+                        required
+                        maxlength="50"
+                        data-maxlength="50">
+                    <small class="char-counter">${escapeHtml(listing.price)}</small>
+
+                    <fieldset>
+                        <legend>Modalidad</legend>
+                        ${renderCheckboxGroup(
+                            'modality',
+                            ListingModality,
+                            listing.modality
+                        )}
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Materias</legend>
+                        ${renderCheckboxGroup(
+                            'subjects',
+                            ListingSubject,
+                            listing.subjects
+                        )}
+                    </fieldset>
 
                     <div class="listing-actions">
                         <button type="submit"> Guardar </button>
@@ -169,28 +255,19 @@ export class ListingsController {
 
         if (!listing) throw new NotFoundException('Listing no encontrado');
 
-        if (listing.author.id !== session.userId) throw new ForbiddenException('No puedes borrar este listing');
+        if (listing.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException('No puedes borrar este listing');
 
         await this.ListingsService.remove(id);
         return ""; // empty string for HTMX to swap in the HTML
     }
 
     // Helper Method
-    private renderListingCard(listing: any, userId?: number) {
-        const canEdit = listing.author?.id === userId
-
-        const created = new Date(listing.createdAt);
-        const updated = new Date(listing.updatedAt);
-        // Check if updated time is later than created time (by at least 1 second to be safe)
-        const isEdited = updated.getTime() > (created.getTime() + 1000);
+    private renderListingCard(listing: any, userId?: number, isAdmin?: boolean) {
+        const canEdit = (listing.author?.id === userId || isAdmin)
 
         return `
             <div class="listing" id="listing-${listing.id}">
                 <h2> ${escapeHtml(listing.title)} </h2>
-                <small>
-                    ${listing.author.name} | ${timeAgo(listing.createdAt)}
-                    ${isEdited ? `[Editado: ${timeAgo(listing.updatedAt)}]` : ''}
-                </small>
                 <p> ${escapeHtml(listing.content)} </p>
 
                 ${ canEdit ? `

@@ -96,6 +96,7 @@ export class AuthController {
 
             // Log in immediately
             (res.req as any).session.userId = user.id;
+            (res.req as any).session.isAdmin = user.isAdmin;
 
             return res
                 .header('HX-Redirect', '/posts')
@@ -168,6 +169,7 @@ export class AuthController {
             const user = await this.authService.validateUser(body.email, body.password)
 
             session.userId = user.id;
+            session.isAdmin = user.isAdmin;
             return res.header('HX-Redirect', '/posts').send();
 
         } catch {

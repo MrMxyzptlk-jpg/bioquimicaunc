@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <main class="layout-grid" style="height: 100vh;">
+    <main class="layout-grid">
 
         <section class="description-div">
             <p>
@@ -44,6 +44,12 @@
 
         <div id="listings-posts" class="listings-section">
             <p class="signal"> Selecciona una categoría. </p>
+        </div>
+
+        <div id="listingForm" class="forum-form"
+            hx-get="/listings/admin/form"
+            hx-trigger="load"
+            hx-swap="outerHTML">
         </div>
 
     </main>
