@@ -357,9 +357,9 @@ FORUM POSTS
     }
 
 /* =========================================
-FORUM POSTS
+FORUM/LISTINGS POSTS
 ========================================= */
-    .forum-section {
+    .forum-section, .listings-section {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -368,7 +368,7 @@ FORUM POSTS
         margin: 0 auto;
     }
 
-    .post {
+    .post, .listing {
         width: 95%;
         box-sizing: border-box;
         display: flex;
@@ -386,15 +386,15 @@ FORUM POSTS
         box-shadow: 3px 3px 5px 2px var(--shadow-color);
     }
 
-    .post h2 {
+    .post h2, listing h2 {
         margin: 0;
     }
 
-    .post p {
+    .post p, listing p {
         font-family: system-ui;
     }
 
-    .post-actions {
+    .post-actions, .listing-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
         align-items: center;
@@ -403,7 +403,7 @@ FORUM POSTS
         gap: 4rex;
     }
 
-    .post-action-btn{
+    .post-action-btn, .listing-action-btn{
         text-align: center;
         font-size: 0.95rem;
         padding: 0.4rem;
@@ -411,13 +411,13 @@ FORUM POSTS
     }
 
 /* =========================================
-COMMENTS (Updated for Hierarchy & Tooltips)
+COMMENTS/REVIEWS
 ========================================= */
-    .comment-wrapper form {
+    .comment-wrapper form, .review-wrapper form {
         margin-top: 0.4rem;
     }
 
-    .comment-wrapper input[type="text"] {
+    .comment-wrapper input, .review-wrapper input[type="text"] {
         width: 90%;
         padding: 0.3rem;
         font-size: 0.8rem;
@@ -425,12 +425,12 @@ COMMENTS (Updated for Hierarchy & Tooltips)
         border: none;
     }
 
-    .comment-wrapper button {
+    .comment-wrapper button, .review-wrapper button {
         font-size: 0.7rem;
         padding: 0.3rem 0.6rem;
     }
 
-    .comment-wrapper::before {
+    .comment-wrapper::before, .review-wrapper::before {
         content: "";
         position: absolute;
         left: 0;
@@ -440,14 +440,14 @@ COMMENTS (Updated for Hierarchy & Tooltips)
         background: rgba(255,255,255,0.15);
     }
 
-    .comment-content {
+    .comment-content, .review-content {
         text-align: left;
         padding-top: 10px;
         font-size: 1.05rem;
         border-bottom: 1px solid #000;
     }
 
-    .comment-details {
+    .comment-details, .review-details {
         align-items: left;
         font-size: 0.9rem;
     }
@@ -471,17 +471,17 @@ COMMENTS (Updated for Hierarchy & Tooltips)
     display: none;
     }
 
-    .comment-btn {
+    .comment-btn, .review-btn {
         font-size: 0.95rem;
         text-align: right;
     }
 
-    .comments-section {
+    .comments-section, .review-section {
         width: 100%;
         margin-top: 1rem;
     }
 
-    .comment {
+    .comment, .review {
         background: #666;
         padding: 0.7rem 0.9rem;
         border-radius: 6px;
@@ -492,7 +492,7 @@ COMMENTS (Updated for Hierarchy & Tooltips)
         border: 1px solid rgba(255,255,255,0.15);
     }
 
-    .comment-actions {
+    .comment-actions, .review-actions {
         display: flex;
         gap: 0.8rem;
         margin-top: 5px;
@@ -656,19 +656,47 @@ FORMS & INPUTS
         border-color: transparent;
     }
 
+    fieldset {
+        display: grid;
+        width: 95%;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Columns at least 150px wide, filling the space */
+        gap: 0.5rem;
+        border: 1px solid white;
+        padding: 1rem;
+        border-radius: 6px;
+        color: white;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center; /* Keeps text centered vertically with the box */
+        cursor: pointer;     /* Makes the whole text clickable */
+        user-select: none;   /* Prevents accidental text highlighting while clicking */
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 1.1em;
+        height: 1.1em;
+        margin-right: 0.5rem;
+        flex-shrink: 0; /* CRITICAL: Prevents long text from squishing the checkbox */
+
+        /* Optional: Makes the checkbox color match your theme */
+        accent-color: var(--accent-blue);
+    }
+
 /* =========================================
 LOADING SPRITE ANIMATION
 ========================================= */
-.crow-loader {
-    width: 100px;
-    height: 100px;
-    background-image: url("../assets/flying-crow.svg");
-    background-repeat: no-repeat;
-    background-size: 1000% 100%;
-    animation: crow-sprite 0.8s infinite steps(9) alternate;
-}
+    .crow-loader {
+        width: 100px;
+        height: 100px;
+        background-image: url("../assets/flying-crow.svg");
+        background-repeat: no-repeat;
+        background-size: 1000% 100%;
+        animation: crow-sprite 0.8s infinite steps(9) alternate;
+    }
 
-@keyframes crow-sprite {
-    from { background-position: 0 0; }
-    to   { background-position: 100% 0; }
-}
+    @keyframes crow-sprite {
+        from { background-position: 0 0; }
+        to   { background-position: 100% 0; }
+    }

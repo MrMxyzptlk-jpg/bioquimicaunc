@@ -235,7 +235,7 @@ export class ReviewsController {
                     <details>
                         <summary> Responder </summary>
 
-                        <form hx-listing="/reviews"
+                        <form hx-post="/reviews"
                             hx-target="#children-container-${review.id}"
                             hx-swap="beforeend"
                             hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"

@@ -138,8 +138,8 @@ export class ListingsController {
         return this.renderListingCard(listing, session.userId, session.isAdmin);
     }
 
-    @Get(':id/comments-button')
-    getCommentsButton(@Param('id') id: string) {
+    @Get(':id/reviews-button')
+    getReviewsButton(@Param('id') id: string) {
         return this.renderShowButton(+id);
     }
 
@@ -147,8 +147,8 @@ export class ListingsController {
     private renderShowButton(listingId: number) {
         return `
             <button
-                hx-get="/comments/listing/${listingId}"
-                hx-target="#comments-list-${listingId}"
+                hx-get="/reviews/listing/${listingId}"
+                hx-target="#reviews-list-${listingId}"
                 hx-swap="innerHTML"
                 class="listing-action-btn">
                 Ver Comentarios
@@ -287,31 +287,31 @@ export class ListingsController {
                     </div>
                 ` : ''}
 
-                <div class="comment-wrapper" style="width: 100%;">
+                <div class="review-wrapper" style="width: 100%;">
                     <details>
                         <summary> Comentar </summary>
 
                         <form
-                            hx-listing="/comments"
-                            hx-target="#comments-list-${listing.id}"
+                            hx-post="/reviews"
+                            hx-target="#reviews-list-${listing.id}"
                             hx-swap="beforeend"
                             hx-on::before-request="
-                                if (!document.querySelector('#comments-list-${listing.id} .comment-wrapper')) {
-                                    htmx.ajax('GET', '/comments/listing/${listing.id}', '#comments-list-${listing.id}');
+                                if (!document.querySelector('#reviews-list-${listing.id} .review-wrapper')) {
+                                    htmx.ajax('GET', '/reviews/listing/${listing.id}', '#reviews-list-${listing.id}');
                                 }"
                             hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
-                            class="comment-form">
+                            class="review-form">
 
                             <input type="hidden" name="listingId" value="${listing.id}">
 
                             <textarea type="text" name="content" placeholder="Escribe un comentario..." required data-maxlength="1000" maxlength="1000"></textarea>
                             <small class="char-counter"></small>
-                            <button type="submit" class="comment-btn"> Enviar </button>
+                            <button type="submit" class="review-btn"> Enviar </button>
                         </form>
                     </details>
                 </div>
 
-                <div id="comments-list-${listing.id}" class="comments-section">
+                <div id="reviews-list-${listing.id}" class="reviews-section">
                     ${this.renderShowButton(listing.id)}
                 </div>
             </div>
