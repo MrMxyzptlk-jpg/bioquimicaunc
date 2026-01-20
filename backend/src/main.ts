@@ -6,11 +6,12 @@ import csrf from 'csurf';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AuthExceptionFilter } from './auth/auth-exception.filter';
 import { HtmxThrottlerFilter } from './utils/throttler.filter';
+import { HtmxExceptionFilter } from './utils/htmx-exception.filter';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
 
-    app.useGlobalFilters(new AuthExceptionFilter(), new HtmxThrottlerFilter());
+    app.useGlobalFilters(new HtmxThrottlerFilter(), new HtmxExceptionFilter(), new AuthExceptionFilter());
 
     app.set('trust proxy', 1);
 

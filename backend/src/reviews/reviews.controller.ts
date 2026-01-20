@@ -27,7 +27,6 @@ export class ReviewsController {
     @Post()
     @Header('Content-Type', 'text/html')
     async create(@Body() createReviewDto: CreateReviewDto, @Session() session: Record<string, any>) {
-        if (!session.userId) return `<div class="error"> Se necesita sesión iniciada </div>`;
 
         const user = await this.usersRepo.findOneBy({ id: session.userId });
         if (!user) throw new UnauthorizedException();
@@ -69,7 +68,7 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException('No puedes borrar esta publicación');
 
         const deletedReview = await this.reviewsService.remove(id);
         return this.renderSingleReview(deletedReview, session.userId, session.isAdmin);
@@ -85,7 +84,7 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException('No puedes editar esta publicación.');
 
         return `
             <div class="review-wrapper" id="review-${review.id}">
@@ -128,7 +127,7 @@ export class ReviewsController {
         const review = await this.reviewsService.findOne(id);
 
         if (!review) throw new NotFoundException();
-        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
+        if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException('No puedes editar esta publicación');
 
         const updatedReview = await this.reviewsService.update(id, UpdateReviewDto);
         return this.renderSingleReview(updatedReview, session.userId, session?.isAdmin);

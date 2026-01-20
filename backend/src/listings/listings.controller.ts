@@ -283,15 +283,15 @@ export class ListingsController {
                 <h2> ${escapeHtml(listing.title)} </h2>
                 <p> ${escapeHtml(listing.content)} </p>
 
-                <ul class="fa-ul">
+                <ul class="rating-info" style="list-style-type: none;">
                     <li>
-                        <span class="fa-li">${featherIcon}</i></span>  Precio: &nbsp;&nbsp; ${listing.price}
+                        Precio: &nbsp;&nbsp; ${listing.price}
                     </li>
                     <li>
-                        <span class="fa-li">${featherIcon}</span>  Modalidad: ${escapeHtml(listing.modality.join(', '))}
+                        Modalidad: ${escapeHtml(listing.modality.join(', '))}
                     </li>
                     <li>
-                        <span class="fa-li">${featherIcon}</i></span>  Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
+                        Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
                     </li>
                 </ul>
 

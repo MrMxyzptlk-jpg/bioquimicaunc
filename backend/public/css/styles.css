@@ -648,6 +648,10 @@ UTILITIES & FOOTER
         text-align: center;
     }
 
+    .rating-info li {
+        margin-bottom: 10px;
+    }
+
 /* =========================================
 FORMS & INPUTS
 ========================================= */
