@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, MaxLength, Min, Max, IsInt } from "class-validator";
+import { Type } from 'class-transformer';
 
 export class UpdateReviewDto {
     @IsString()
@@ -6,6 +7,7 @@ export class UpdateReviewDto {
     @MaxLength(1000)
     content: string;
 
+    @Type(() => Number)
     @IsInt()
     @Min(1)
     @Max(5)

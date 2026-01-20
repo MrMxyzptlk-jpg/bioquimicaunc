@@ -57,7 +57,11 @@
 
     <script>
         function setCategory(cat) {
-            document.getElementById('categoryInput').value = cat;
+            const input = document.getElementById('categoryInput');
+            if (input) {
+                input.value = cat;
+            } else {
+                console.log('Category input not found (User might not be admin)');            }
         }
     </script>
     <script> loadHeader("Anunciate!"); loadFooter();</script>

@@ -11,6 +11,7 @@ export class CreateReviewDto {
     @MaxLength(1000)
     content: string;
 
+    @Type(() => Number)
     @IsInt()
     @Min(1)
     @Max(5)

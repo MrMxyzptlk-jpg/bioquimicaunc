@@ -23,14 +23,21 @@ export class ReviewsService {
     async create(createReviewDto: CreateReviewDto, user: User) {
         const listing = await this.listingsRepo.findOneBy({ id: createReviewDto.listingId });
         if (!listing) throw new NotFoundException('Anuncio no encontrado');
-        if (listing.author.id === user.id) {
-            throw new ForbiddenException('No podés reseñar tu propio anuncio');
-        }
+        if (listing.author.id === user.id) throw new ForbiddenException('No podés reseñar tu propio anuncio');
+
+        const existing = await this.reviewsRepo.findOne({
+            where: {
+                listing: { id: listing.id },
+                author: { id: user.id },
+            }
+        });
+        if (existing)  throw new ForbiddenException('Ya reseñaste este anuncio');
 
         const review = this.reviewsRepo.create({
             content: createReviewDto.content,
+            rating: createReviewDto.rating,
             author: user,
-            listing: listing,
+            listing,
         });
 
         return this.reviewsRepo.save(review);
@@ -39,7 +46,7 @@ export class ReviewsService {
     async findByPost(listingId:number) {
         return this.reviewsRepo.find({
             where: { listing: { id: listingId } },
-            relations: ['listing', 'author', 'parent'],
+            relations: ['listing', 'author'],
             order: { createdAt: 'DESC' }
         });
     }

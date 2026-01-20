@@ -328,7 +328,28 @@ export class ListingsController {
 
                             <input type="hidden" name="listingId" value="${listing.id}">
 
-                            <textarea type="text" name="content" placeholder="Escribe un comentario..." required data-maxlength="1000" maxlength="1000"></textarea>
+                            <label>
+                                Calificación:
+                                <div class="rating">
+                                    <input type="radio" name="rating" id="rate-5-${listing.id}" value="5" required>
+                                    <label for="rate-5-${listing.id}">${featherIcon}</label>
+
+                                    <input type="radio" name="rating" id="rate-4-${listing.id}" value="4">
+                                    <label for="rate-4-${listing.id}">${featherIcon}</label>
+
+                                    <input type="radio" name="rating" id="rate-3-${listing.id}" value="3">
+                                    <label for="rate-3-${listing.id}">${featherIcon}</label>
+
+                                    <input type="radio" name="rating" id="rate-2-${listing.id}" value="2">
+                                    <label for="rate-2-${listing.id}">${featherIcon}</label>
+
+                                    <input type="radio" name="rating" id="rate-1-${listing.id}" value="1">
+                                    <label for="rate-1-${listing.id}">${featherIcon}</label>
+                                </div>
+
+                            </label>
+
+                            <textarea type="text" name="content" placeholder="Comparte tu opinión..." required data-maxlength="1000" maxlength="1000"></textarea>
                             <small class="char-counter"></small>
                             <button type="submit" class="review-btn"> Enviar </button>
                         </form>

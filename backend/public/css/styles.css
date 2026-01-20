@@ -7,6 +7,7 @@
     --text-muted: #cccccc;
     --accent-pink: #f0abd6;
     --accent-blue: #a1d9e5;
+    --rating-color:#a549cc;
     --shadow-color: #00677b;
     --border-light: rgba(255, 255, 255, 0.566);
 }
@@ -410,6 +411,37 @@ FORUM/LISTINGS POSTS
         border-radius: 12px;
     }
 
+    .rating {
+    display: inline-flex;
+    flex-direction: row-reverse; /* KEY */
+    gap: 4px;
+    }
+
+    .rating input {
+        display: none;
+    }
+
+    .rating label {
+        cursor: pointer;
+    }
+
+    /* Default = empty stars */
+    .rating svg path:first-child {
+        fill: none;
+    }
+
+    /* Hover fill */
+    .rating label:hover svg path:first-child,
+    .rating label:hover ~ label svg path:first-child {
+        fill: var(--rating-color);
+    }
+
+    /* Checked fill */
+    .rating input:checked ~ label svg path:first-child {
+        fill: var(--rating-color);
+    }
+
+
 /* =========================================
 COMMENTS/REVIEWS
 ========================================= */
@@ -608,7 +640,7 @@ UTILITIES & FOOTER
 /* =========================================
 FORMS & INPUTS
 ========================================= */
-    .forum-form, .comment-form {
+    .forum-form, .comment-form, .review-form {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -629,7 +661,9 @@ FORMS & INPUTS
     .forum-form input,
     .forum-form textarea,
     .comment-form input,
-    .comment-form textarea
+    .comment-form textarea,
+    .review-form input,
+    .review-form textarea
     {
         font-family: system-ui;
         width: 95%;

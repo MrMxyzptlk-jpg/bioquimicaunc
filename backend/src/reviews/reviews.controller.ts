@@ -12,6 +12,7 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { Throttle } from '@nestjs/throttler';
 import { escapeHtml } from '../utils/escapeHtml';
+import { featherIcon } from 'src/utils/form-utils';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -49,13 +50,13 @@ export class ReviewsController {
                 hx-target="#reviews-list-${listingId}"
                 hx-swap="innerHTML"
                 class="listing-action-btn">
-                Ocultar Comnetarios
+                Ocultar Opiniones
             </button>
         `;
 
-        if (allReviews.length === 0 ) return hideButton + '<p class="text-muted"> No hay comentarios aún. </p>';
+        if (allReviews.length === 0 ) return hideButton + '<p class="text-muted"> No hay opiniones aún. </p>';
 
-        return hideButton + allReviews.map(c => this.renderReviewTree(c, allReviews, session?.userId)).join('');
+        return hideButton + allReviews.map(r => this.renderSingleReview(r, session?.userId, session?.isAdmin)).join('');
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -71,8 +72,7 @@ export class ReviewsController {
         if (review.author.id !== session.userId && !session.isAdmin) throw new ForbiddenException();
 
         const deletedReview = await this.reviewsService.remove(id);
-        const allReviews = await this.reviewsService.findByPost(deletedReview.listing.id);
-        return this.renderReviewTree(deletedReview, allReviews, session.userId);
+        return this.renderSingleReview(deletedReview, session.userId, session.isAdmin);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -155,7 +155,9 @@ export class ReviewsController {
             <div class="review-wrapper" id="review-${review.id}">
                 <div class="review-content" style="margin-left: 10px;">
                     <small class="review-details">
-                        <strong>${review.author.name}</strong> | ${timeAgo(review.createdAt)}
+                        <strong>${review.author.name}</strong>
+                        | ${this.renderRating(review.rating)}
+                        | ${timeAgo(review.createdAt)}
                         ${ isEdited ? `[Editado: ${timeAgo(review.updatedAt)}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(review.content)}</p>
@@ -173,7 +175,7 @@ export class ReviewsController {
                             hx-delete="/reviews/${review.id}"
                             hx-target="#review-${review.id}"
                             hx-swap="outerHTML"
-                            hx-confirm="¿Borrar comentario?">
+                            hx-confirm="¿Borrar opinión?">
                             Eliminar
                         </button>
                     ` : ''}
@@ -184,84 +186,7 @@ export class ReviewsController {
         `;
     }
 
-    private renderReviewTree(
-        review: any,
-        allReviews: any[],
-        userId?: number,
-        level = 0
-    ) {
-        const children = allReviews.filter(c => c.parent && c.parent.id === review.id); // all children from this review
-
-        const paddingLeft = level * 15; // level-based indent
-
-        const isDeleted = review.content === '[Comentario borrado]';
-        const canEdit = !isDeleted && (review.author?.id === userId);
-
-        const created = new Date(review.createdAt);
-        const updated = new Date(review.updatedAt);
-        // Compare times
-        const wasEdited = updated.getTime() > (created.getTime() + 1000);
-
-        return `
-            <div class="review-wrapper" id="review-${review.id}">
-                <div class="review-content" style="padding-left: ${paddingLeft}px;">
-                    <small class="review-details">
-                        <strong> ${review.author.name} </strong> | ${timeAgo(review.createdAt)}
-                        ${ wasEdited ? `[Editado: ${timeAgo(review.updatedAt)}]` : ''}
-                    </small>
-                    <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(review.content)}</p>
-                </div>
-
-                ${ canEdit ? `
-                    <div class="review-actions">
-                        <button
-                            hx-get="/reviews/${review.id}/edit"
-                            hx-target="#review-${review.id}"
-                            hx-swap="outerHTML">
-                            Editar
-                        </button>
-
-                        <button
-                            hx-delete="/reviews/${review.id}"
-                            hx-target="#review-${review.id}"
-                            hx-swap="outerHTML"
-                            hx-confirm="¿Borrar comentario?">
-                            Eliminar
-                        </button>
-                    </div>
-                ` : ''}
-
-                ${ !isDeleted ? `
-                    <details>
-                        <summary> Responder </summary>
-
-                        <form hx-post="/reviews"
-                            hx-target="#children-container-${review.id}"
-                            hx-swap="beforeend"
-                            hx-on::after-request="this.reset(); this.closest('details').removeAttribute('open');"
-                            class="review-form">
-
-                            <input type="hidden" name="listingId" value="${review.listing ? review.listing.id : review.listingId}">
-                            <input type="hidden" name="parentId" value="${review.id}">
-
-                            <textarea
-                                type="text"
-                                name="content"
-                                placeholder="Respuesta..."
-                                required
-                                data-maxlength="1000"
-                                maxlength="1000"></textarea>
-                            <small class="char-counter"></small>
-                            <button type="submit" style="font-size:0.8rem;"> Enviar </button>
-                        </form>
-                    </details>
-                ` : ''}
-
-                <div id="children-container-${review.id}">
-                    ${children.map(child => this.renderReviewTree(child, allReviews, userId, level + 1)).join('')}
-                </div>
-
-            </div>
-        `;
+    private renderRating(rating: number) {
+        return featherIcon.repeat(rating)
     }
 }
