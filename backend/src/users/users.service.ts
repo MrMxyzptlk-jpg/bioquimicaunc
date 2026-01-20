@@ -15,6 +15,10 @@ export class UsersService {
         return this.usersRepo.findOne({ where: { email } });
     }
 
+    findByName(name: string) {
+        return this.usersRepo.findOne({ where: { name } });
+    }
+
     create(data: Partial<User>) {
         const user = this.usersRepo.create(data);
         return this.usersRepo.save(user);

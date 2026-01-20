@@ -101,10 +101,10 @@ export class AuthController {
             return res
                 .header('HX-Redirect', '/posts')
                 .send();
-        } catch {
+        } catch (err: any) {
             return res.send(`
                     <div class="error">
-                        El email ya está registrado
+                        ${err.message}
                     </div>
                 `);
         }
