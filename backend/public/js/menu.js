@@ -5,7 +5,7 @@ function loadHeader(pageTitle) {
         <header class="site-header menu-closed">
 
             <div class="menu-logo" id="menuToggle">
-                <img src="/assets/logo.jpeg" alt="Bioquímica UNC">
+                <img src="/assets/logo.jpeg" alt="Bioquímica UNC" class="menu-logo-img">
             </div>
             <nav class="menu-panel">
                 <a href="/index.html"> Inicio </a><br>

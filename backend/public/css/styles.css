@@ -276,6 +276,10 @@ LAYOUT & BACKGROUNDS
         border: solid 1px white;
     }
 
+    .menu-logo-img:hover{
+        border: solid 3px var(--accent-pink);
+    }
+
     .socials { display: flex; gap: 1.5rem; }
 
     .socials img {
@@ -758,4 +762,35 @@ LOADING SPRITE ANIMATION
     @keyframes crow-sprite {
         from { background-position: 0 0; }
         to   { background-position: 100% 0; }
+    }
+
+    /* Hidden unless HTMX request is active */
+    .htmx-indicator {
+        display: none;
+    }
+
+    /* Shown automatically by HTMX */
+    .htmx-request .htmx-indicator {
+        display: block;
+    }
+
+    /* Optional positioning */
+    #global-loader {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        pointer-events: none;
+
+        /* soft glow background */
+        padding: 12px;
+        border-radius: 50%;
+
+        background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.35) 0%,
+            rgba(255, 255, 255, 0.2) 40%,
+            rgba(255, 255, 255, 0.05) 70%,
+            rgba(255, 255, 255, 0) 90%
+        );
     }
