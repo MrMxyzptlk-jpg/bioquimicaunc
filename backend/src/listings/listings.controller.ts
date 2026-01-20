@@ -13,7 +13,7 @@ import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
 import type { Response } from 'express';
 import { escapeHtml } from '../utils/escapeHtml';
-import { renderCheckboxGroup, featherIcon } from '../utils/form-utils';
+import { renderCheckboxGroup, featherIcon, getRateableFeather } from '../utils/form-utils';
 
 @Controller('listings')
 export class ListingsController {
@@ -275,20 +275,32 @@ export class ListingsController {
     private renderListingCard(listing: any, userId?: number, isAdmin?: boolean) {
         const canEdit = (listing.author?.id === userId || isAdmin)
 
+        let averageRating = 0
+        if (listing.ratingCount !== 0) averageRating = listing.ratingSum / listing.ratingCount;
+
         return `
             <div class="listing" id="listing-${listing.id}">
                 <h2> ${escapeHtml(listing.title)} </h2>
                 <p> ${escapeHtml(listing.content)} </p>
-                <small>
-                    <ul class="fa-ul">
+
+                <ul class="fa-ul">
                     <li>
                         <span class="fa-li">${featherIcon}</i></span>  Precio: &nbsp;&nbsp; ${listing.price}
                     </li>
                     <li>
                         <span class="fa-li">${featherIcon}</span>  Modalidad: ${escapeHtml(listing.modality.join(', '))}
+                    </li>
                     <li>
                         <span class="fa-li">${featherIcon}</i></span>  Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
-                    </ul>
+                    </li>
+                </ul>
+
+                <small>
+                    ${listing.ratingCount !== 0 ? `
+                        ${this.renderFeatherRating(averageRating, listing.id)}
+                        <p class="rating-container"> ${averageRating.toFixed(1)}/5 | ${listing.ratingCount} ${listing.ratingCount > 1 ? + 'calificaciones': 'calificación'} </p>
+                        `
+                         : '<p class="rating-container text-muted";">Sin calificar</p>'}
                 </small>
 
                 ${ canEdit ? `
@@ -363,4 +375,27 @@ export class ListingsController {
         `
     }
 
+    private renderFeatherRating(rating: number, listingId: number) {
+        const totalFeathers = 5;
+        let html = '<div class="rating-container">';
+
+        for (let i = 1; i <= totalFeathers; i++) {
+            // Calculate percentage for this specific feather
+            let percentage = 0;
+            if (rating >= i) {
+                percentage = 100; // Full
+            } else if (rating > i - 1) {
+                percentage = (rating - (i - 1)) * 100; // Partial (e.g. 50%)
+            }
+
+            // Generate a unique ID for this specific feather instance
+            // e.g. "listing-10-feather-1"
+            const uniqueId = `l${listingId}-f${i}`;
+
+            html += getRateableFeather(uniqueId, percentage);
+        }
+
+        html += '</div>';
+        return html;
+    }
 }

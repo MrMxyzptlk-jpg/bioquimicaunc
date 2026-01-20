@@ -637,6 +637,17 @@ UTILITIES & FOOTER
         width: auto;
     }
 
+    .feather-icon-rating {
+        height: 40px;
+        width: auto;
+    }
+
+    .rating-container {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
 /* =========================================
 FORMS & INPUTS
 ========================================= */

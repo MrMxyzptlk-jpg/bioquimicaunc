@@ -50,13 +50,12 @@ export class ListingsPost {
     @Column({
         type: 'enum',
         enum: ListingSubject,
-        array: true,
-        nullable: true,
+        array: true
     })
     subjects: ListingSubject[];
 
     @Column({ type: 'float', default: 0 })
-    ratingAvg: number;
+    ratingSum: number;
 
     @Column({ default: 0 })
     ratingCount: number;

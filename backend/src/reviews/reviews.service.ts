@@ -40,6 +40,10 @@ export class ReviewsService {
             listing,
         });
 
+        listing.ratingSum += review.rating;
+        listing.ratingCount += 1;
+        await this.listingsRepo.save(listing);
+
         return this.reviewsRepo.save(review);
     }
 
@@ -66,17 +70,28 @@ export class ReviewsService {
         const review = await this.reviewsRepo.findOne({ where: { id }, relations: ['author', 'listing'] });
 
         if (!review) throw new NotFoundException(`Review with id ${id} not found after update`);
+
         if (newReview.content !== undefined) review.content = newReview.content;
+        review.listing.ratingSum += (newReview.rating - review.rating);
+        review.rating = newReview.rating
+        await this.listingsRepo.save(review.listing)
 
         return this.reviewsRepo.save(review);
     }
 
     async remove(id: number): Promise<Review> {
-        await this.reviewsRepo.update(id, { content: '[Comentario borrado]'}); //author: null in case we want to remove the author as well
-        const review = await this.findOne(id);
+        const review = await this.reviewsRepo.findOne({
+            where: { id },
+            relations: ['listing'],
+        });
 
         if (!review) throw new NotFoundException(`Review with id ${id} not found after delete`);
 
-        return review;
+        review.listing.ratingSum -= review.rating;
+        review.listing.ratingCount -= 1;
+
+        await this.listingsRepo.save(review.listing);
+
+        return this.reviewsRepo.remove(review);
     }
 }

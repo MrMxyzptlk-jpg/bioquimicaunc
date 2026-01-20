@@ -47,3 +47,36 @@ export const featherIcon = `<svg
                                     stroke="none">
                                 </path>
                             </svg>`;
+
+export function getRateableFeather(uniqueId: string, percentage: number) {
+    // 1. Determine the color stops based on percentage (0 to 100)
+    // If percentage is 50, we have Purple up to 50%, then Grey from 50% onwards.
+
+    return `
+        <svg
+            class="feather-icon-rating"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24">
+            <defs>
+                <linearGradient id="grad-${uniqueId}" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="${percentage}%" style="stop-color: #a549cc; stop-opacity:1" />
+                    <stop offset="${percentage}%" style="stop-color: none; stop-opacity:1" />
+                </linearGradient>
+            </defs>
+
+            <path
+                fill="url(#grad-${uniqueId})"
+                stroke="#555"
+                stroke-width="0"
+                d="${featherFillPath}">
+            </path>
+            <path
+                d="${featherContourPath}"
+                fill="white"
+                stroke-width="0.5"
+                stroke="none">
+            </path>
+        </svg>
+        `;
+}
