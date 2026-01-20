@@ -13,7 +13,7 @@ import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { timeAgo } from '../utils/time';
 import type { Response } from 'express';
 import { escapeHtml } from '../utils/escapeHtml';
-import { renderCheckboxGroup } from '../utils/form-utils';
+import { renderCheckboxGroup, featherIcon } from '../utils/form-utils';
 
 @Controller('listings')
 export class ListingsController {
@@ -151,7 +151,7 @@ export class ListingsController {
                 hx-target="#reviews-list-${listingId}"
                 hx-swap="innerHTML"
                 class="listing-action-btn">
-                Ver Comentarios
+                Ver Opiniones
             </button>
         `
     }
@@ -195,19 +195,32 @@ export class ListingsController {
 
                     <input type="hidden" name="category" value="${listing.category}" required>
 
-                    <input name="title" value="${escapeHtml(listing.title)}" required data-maxlength="120" maxlength="120">
+                    <input
+                        name="title"
+                        placeholder="Título del anuncio"
+                        value="${escapeHtml(listing.title)}"
+                        data-maxlength="120"
+                        maxlength="120"
+                        required>
                     <small class="char-counter"></small>
 
-                    <textarea name="content" required data-maxlength="5000" maxlength="5000">${escapeHtml(listing.content)}</textarea>
+                    <textarea
+                        name="content"
+                        placeholder="Descripción del servicio"
+                        data-maxlength="5000"
+                        maxlength="5000"
+                        required>
+                        ${escapeHtml(listing.content)}
+                    </textarea>
                     <small class="char-counter"></small>
 
                     <input
                         name="price"
                         placeholder="Precio"
+                        value="${escapeHtml(listing.price)}"
                         required
                         maxlength="50"
                         data-maxlength="50">
-                    <small class="char-counter">${escapeHtml(listing.price)}</small>
 
                     <fieldset>
                         <legend>Modalidad</legend>
@@ -269,12 +282,12 @@ export class ListingsController {
                 <small>
                     <ul class="fa-ul">
                     <li>
-                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Precio: ${listing.price}
+                        <span class="fa-li">${featherIcon}</i></span>  Precio: &nbsp;&nbsp; ${listing.price}
                     </li>
                     <li>
-                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Modalidad: ${escapeHtml(listing.modality.join(', '))}
+                        <span class="fa-li">${featherIcon}</span>  Modalidad: ${escapeHtml(listing.modality.join(', '))}
                     <li>
-                        <span class="fa-li"><i class="fas fa-feather-alt"></i></span>  Materias: ${escapeHtml(listing.subjects.join(', '))}
+                        <span class="fa-li">${featherIcon}</i></span>  Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
                     </ul>
                 </small>
 
@@ -300,7 +313,7 @@ export class ListingsController {
 
                 <div class="review-wrapper" style="width: 100%;">
                     <details>
-                        <summary> Comentar </summary>
+                        <summary> Opinar </summary>
 
                         <form
                             hx-post="/reviews"

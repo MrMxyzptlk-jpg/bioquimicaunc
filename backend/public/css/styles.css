@@ -600,6 +600,11 @@ UTILITIES & FOOTER
         color: #dc7b26; /* red */
     }
 
+    .feather-icon {
+        height: 24px;
+        width: auto;
+    }
+
 /* =========================================
 FORMS & INPUTS
 ========================================= */
