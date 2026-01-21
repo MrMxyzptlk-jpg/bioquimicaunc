@@ -35,7 +35,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     // Load the Environment Variables
     ConfigModule.forRoot({
         isGlobal: true,
-        envFilePath: '../.env.development', // Asuming we run 'npm run start' from /backend
+        envFilePath:
+            process.env.NODE_ENV === 'production'
+            ? undefined
+            : '../.env.development', // Asuming we run 'npm run start' from /backend
     }),
 
     // Configure TypeORM Asynchronously
@@ -46,9 +49,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
             type: 'postgres',
             host: configService.get<string>('DB_HOST'),
             port: configService.get<number>('DB_PORT'),
-            username: configService.get<string>('DB_USERNAME'),
+            username: configService.get<string>('DB_USER'),
             password: configService.get<string>('DB_PASSWORD'),
-            database: configService.get<string>('DB_DATABASE'),
+            database: configService.get<string>('DB_NAME'),
             entities: [ForumPost, Comment, User, ListingsPost, Review],
             synchronize: false,
         }),
