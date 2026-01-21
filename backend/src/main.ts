@@ -32,7 +32,13 @@ async function bootstrap() {
         }),
     );
 
-    app.use(csrf());
+    app.use((req, res, next) => {
+        if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+            return next();
+        }
+        return csrf()(req, res, next);
+    });
+
 
     if (process.env.NODE_ENV === 'production') {
         app.disable('x-powered-by');
