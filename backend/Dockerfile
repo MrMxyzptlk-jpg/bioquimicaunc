@@ -14,8 +14,11 @@ RUN npm install
 # 5. Copy the rest of your application code
 COPY . .
 
-# 6. Expose the port the app runs on
+# 6. BUILD the application
+RUN npm run build
+
+# 7. Expose the port the app runs on
 EXPOSE 3000
 
-# 7. The command to start the app in development mode
-CMD ["npm", "run", "start:dev"]
+# 8. Start the app in PRODUCTION mode (No watchers, just the app)
+CMD ["node", "dist/main.js"]
