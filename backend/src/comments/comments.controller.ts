@@ -35,6 +35,7 @@ export class CommentsController {
         return this.renderSingleComment(newComment, session?.userId);
     }
 
+    @Throttle({ default: { limit: 30, ttl: 60000 } })
     @Get('post/:postId')
     @Header('Content-Type', 'text/html')
     async findByPost(
@@ -42,7 +43,20 @@ export class CommentsController {
         @Session() session: Record<string, any>
     ) {
         const allComments = await this.commentsService.findByPost(+postId);
-        const rootComments = allComments.filter(c => !c.parent); // Filter to find only root comments
+        // parentId -> children[]
+        const childrenMap = new Map<number, Comment[]>();
+        const rootComments: Comment[] = [];
+
+        for (const comment of allComments) {
+            if (!comment.parent) {
+                rootComments.push(comment);
+            } else {
+                const parentId = comment.parent.id;
+                const arr = childrenMap.get(parentId) ?? [];
+                arr.push(comment);
+                childrenMap.set(parentId, arr);
+            }
+        }
 
         const hideButton = `
             <button
@@ -56,7 +70,7 @@ export class CommentsController {
 
         if (rootComments.length === 0 ) return hideButton + '<p class="text-muted"> No hay comentarios aún. </p>';
 
-        return hideButton + rootComments.map(c => this.renderCommentTree(c, allComments, session?.userId)).join('');
+        return hideButton + rootComments.map(c => this.renderCommentTree(c, childrenMap, session?.userId)).join('');
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -72,8 +86,7 @@ export class CommentsController {
         if (comment.author.id !== session.userId) throw new ForbiddenException();
 
         const deletedComment = await this.commentsService.remove(id);
-        const allComments = await this.commentsService.findByPost(deletedComment.post.id);
-        return this.renderCommentTree(deletedComment, allComments, session.userId);
+        return this.renderSingleComment(deletedComment, session.userId);
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -156,7 +169,7 @@ export class CommentsController {
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="margin-left: 10px;">
                     <small class="comment-details">
-                        <strong>${comment.author.name}</strong> | ${timeAgo(comment.createdAt)}
+                        <strong>${escapeHtml(comment.author.name)}</strong> | ${timeAgo(comment.createdAt)}
                         ${ isEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(comment.content)}</p>
@@ -204,12 +217,11 @@ export class CommentsController {
 
     private renderCommentTree(
         comment: any,
-        allComments: any[],
+        childrenMap: Map<number, Comment[]>,
         userId?: number,
         level = 0
     ) {
-        const children = allComments.filter(c => c.parent && c.parent.id === comment.id); // all children from this comment
-
+        const children = childrenMap.get(comment.id) ?? [];
         const paddingLeft = level * 15; // level-based indent
 
         const isDeleted = comment.content === '[Comentario borrado]';
@@ -224,7 +236,7 @@ export class CommentsController {
             <div class="comment-wrapper" id="comment-${comment.id}">
                 <div class="comment-content" style="padding-left: ${paddingLeft}px;">
                     <small class="comment-details">
-                        <strong> ${comment.author.name} </strong> | ${timeAgo(comment.createdAt)}
+                        <strong> ${escapeHtml(comment.author.name)} </strong> | ${timeAgo(comment.createdAt)}
                         ${ wasEdited ? `[Editado: ${timeAgo(comment.updatedAt)}]` : ''}
                     </small>
                     <p class="${isDeleted ? 'text-muted' : ''}">${escapeHtml(comment.content)}</p>
@@ -276,7 +288,7 @@ export class CommentsController {
                 ` : ''}
 
                 <div id="children-container-${comment.id}">
-                    ${children.map(child => this.renderCommentTree(child, allComments, userId, level + 1)).join('')}
+                    ${children.map(child => this.renderCommentTree(child, childrenMap, userId, level + 1)).join('')}
                 </div>
 
             </div>

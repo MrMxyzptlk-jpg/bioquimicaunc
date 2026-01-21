@@ -37,11 +37,11 @@ export class ReviewsController {
 
     @Get('listing/:listingId')
     @Header('Content-Type', 'text/html')
-    async findByPost(
+    async findByListing(
         @Param('listingId') listingId: string,
         @Session() session: Record<string, any>
     ) {
-        const allReviews = await this.reviewsService.findByPost(+listingId);
+        const allReviews = await this.reviewsService.findByListing(+listingId);
 
         const hideButton = `
             <button
@@ -59,6 +59,7 @@ export class ReviewsController {
     }
 
     @UseGuards(AuthenticatedGuard)
+    @Throttle({ default: { limit: 5, ttl: 60000 } })
     @Delete(':id')
     @Header('Content-type', 'text/html')
     async delete(
@@ -154,7 +155,7 @@ export class ReviewsController {
             <div class="review-wrapper" id="review-${review.id}">
                 <div class="review-content" style="margin-left: 10px;">
                     <small class="review-details">
-                        <strong>${review.author.name}</strong>
+                        <strong>${escapeHtml(review.author.name)}</strong>
                         | ${this.renderRating(review.rating)}
                         | ${timeAgo(review.createdAt)}
                         ${ isEdited ? `[Editado: ${timeAgo(review.updatedAt)}]` : ''}

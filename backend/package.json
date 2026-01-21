@@ -31,6 +31,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
+    "compression": "^1.8.1",
     "csurf": "^1.11.0",
     "express-session": "^1.18.2",
     "pg": "^8.16.3",

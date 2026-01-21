@@ -7,9 +7,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AuthExceptionFilter } from './auth/auth-exception.filter';
 import { HtmxThrottlerFilter } from './utils/throttler.filter';
 import { HtmxExceptionFilter } from './utils/htmx-exception.filter';
+import compression from 'compression';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
+
+    app.use(compression());
 
     app.useGlobalFilters(new HtmxThrottlerFilter(), new HtmxExceptionFilter(), new AuthExceptionFilter());
 
@@ -30,6 +33,10 @@ async function bootstrap() {
     );
 
     app.use(csrf());
+
+    if (process.env.NODE_ENV === 'production') {
+        app.disable('x-powered-by');
+    }
 
     app.useGlobalPipes(new ValidationPipe({
         transform: true,

@@ -47,7 +47,7 @@ export class ReviewsService {
         return this.reviewsRepo.save(review);
     }
 
-    async findByPost(listingId:number) {
+    async findByListing(listingId:number) {
         return this.reviewsRepo.find({
             where: { listing: { id: listingId } },
             relations: ['listing', 'author'],

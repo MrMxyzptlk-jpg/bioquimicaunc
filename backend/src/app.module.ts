@@ -28,7 +28,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
     ThrottlerModule.forRoot([{
         ttl: 60000,
-        limit: 20,
+        limit: 100,
+        getTracker: (req) => req.session?.userId ?? req.ip,
     }]),
 
     // Load the Environment Variables
