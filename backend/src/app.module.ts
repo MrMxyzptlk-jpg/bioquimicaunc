@@ -53,7 +53,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
             password: configService.get<string>('DB_PASSWORD'),
             database: configService.get<string>('DB_NAME'),
             entities: [ForumPost, Comment, User, ListingsPost, Review],
-            synchronize: true,
+            synchronize: false,
         }),
     }),
 
