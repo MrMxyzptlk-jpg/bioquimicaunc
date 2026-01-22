@@ -65,5 +65,16 @@
         }
     </script>
     <script> loadHeader("Anunciate!"); loadFooter();</script>
+    <script>
+        document.body.addEventListener('htmx:afterSwap', function (evt) {
+            if (evt.target.id === 'listings-posts') {
+                const first = evt.target.querySelector('.listing');
+                if (first) {
+                    first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>

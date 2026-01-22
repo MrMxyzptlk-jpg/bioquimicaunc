@@ -65,6 +65,7 @@ export class AuthController {
                             <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
                             <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
                             <input name="name" placeholder="Usuario" required autocomplete="username"/>
+                            <br>
                             <button type="submit" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Registrarse </button>
                         </form>
 
@@ -136,13 +137,13 @@ export class AuthController {
 
                             <input name="email" type="email" placeholder="Email" required />
                             <input name="password" type="password" placeholder="Contraseña" required />
-                            <button type="submit" class="log-btn"> Iniciar sesión </button>
+                            <br>
+                            <button type="submit" class="log-btn" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Iniciar sesión </button>
                         </form>
 
                         <div id="login-error"></div>
-                        <p>
-                            ¿No tenés cuenta? <a class="log-btn" href="/auth/register"> Registrarse </a>
-                        </p>
+                        <p>¿No tenés cuenta?</p>
+                        <a class="log-btn" href="/auth/register"> Registrarse </a>
                     </div>
                 </main>
                 <script> loadHeader("Iniciar sesión"); loadFooter();</script>

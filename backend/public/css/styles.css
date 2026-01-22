@@ -651,6 +651,11 @@ UTILITIES & FOOTER
         margin-bottom: 10px;
     }
 
+    /*To be implemented for distinguishing admins*/
+    .is-admin {
+        color: var(--accent-blue);
+    }
+
 /* =========================================
 FORMS & INPUTS
 ========================================= */
@@ -735,6 +740,32 @@ FORMS & INPUTS
 
         /* Optional: Makes the checkbox color match your theme */
         accent-color: var(--accent-blue);
+}
+
+/* =========================================
+LOG-IN/SIGN-IN ERRORS
+========================================= */
+
+    /* Base error style */
+    #error .error,
+    #login-error .error {
+    color: #b00020;
+    background: #ffecec;
+    border: 1px solid #f5a3a3;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 0.75rem;
+    }
+
+    /* Animate when HTMX updates the target */
+    #login-error.htmx-settling .error {
+    animation: shakeFade 0.4s ease-out;
+    }
+
+    @keyframes shakeFade {
+    0%   { opacity: 0; transform: translateY(-6px); }
+    60%  { opacity: 1; transform: translateY(2px); }
+    100% { transform: translateY(0); }
     }
 
 /* =========================================

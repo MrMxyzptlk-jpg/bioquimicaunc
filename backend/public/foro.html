@@ -110,13 +110,26 @@
 
     <script>
         function setCategory(cat) {
+            const form = document.getElementById('postForm');
             document.getElementById('categoryInput').value = cat;
             document.getElementById('title').placeholder = `Titulo (Publicado en ${cat})`;
-            document.getElementById('postForm').style.display = 'flex';
-            document.getElementById('title');
+            form.style.display = 'flex';
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     </script>
     <script> loadHeader("Foro"); loadFooter();</script>
+    <script>
+        document.body.addEventListener('post-created', () => {
+            const firstPost = document.querySelector('#forum-posts .post');
+            if (firstPost) {
+                firstPost.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>
