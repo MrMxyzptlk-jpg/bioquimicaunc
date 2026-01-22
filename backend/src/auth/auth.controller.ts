@@ -46,6 +46,7 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Registros </title>
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -64,17 +65,13 @@ export class AuthController {
                             <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
                             <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
                             <input name="name" placeholder="Usuario" required autocomplete="username"/>
+                            <br>
                             <button type="submit" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Registrarse </button>
                         </form>
 
                         <div id="error"></div>
                     </div>
                 </main>
-                <footer class="site-footer">
-                    <p class="footer-quote">
-                        La educación no es algo que se imparte, sino que se comparte
-                    </p>
-                </footer>
                 <script> loadHeader("Registro"); loadFooter();</script>
             </body>
             </html>
@@ -122,6 +119,7 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Iniciar sesión </title>
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -129,7 +127,7 @@ export class AuthController {
                 <script src="/js/footer.js"></script>
             </head>
             <body>
-                <main class="layout-development">
+                <main class="layout-grid">
                     <div class="description-div">
                         <h2> Completa tus datos </h2>
                         <form
@@ -139,20 +137,15 @@ export class AuthController {
 
                             <input name="email" type="email" placeholder="Email" required />
                             <input name="password" type="password" placeholder="Contraseña" required />
-                            <button type="submit" class="log-btn"> Iniciar sesión </button>
+                            <br>
+                            <button type="submit" class="log-btn" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Iniciar sesión </button>
                         </form>
 
                         <div id="login-error"></div>
-                        <p>
-                            ¿No tenés cuenta? <a class="log-btn" href="/auth/register"> Registrarse </a>
-                        </p>
+                        <p>¿No tenés cuenta?</p>
+                        <a class="log-btn" href="/auth/register"> Registrarse </a>
                     </div>
                 </main>
-                <footer class="site-footer">
-                    <p class="footer-quote">
-                        La educación no es algo que se imparte, sino que se comparte
-                    </p>
-                </footer>
                 <script> loadHeader("Iniciar sesión"); loadFooter();</script>
             </body>
             </html>

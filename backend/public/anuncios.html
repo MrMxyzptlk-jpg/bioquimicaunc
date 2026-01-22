@@ -43,14 +43,14 @@
                 onclick="setCategory('Ventas')"> Ventas </button>
         </div>
 
-        <div id="listings-posts" class="listings-section">
-            <p class="signal"> Selecciona una categoría. </p>
-        </div>
-
         <div id="listingForm" class="forum-form"
             hx-get="/listings/admin/form"
             hx-trigger="load"
             hx-swap="outerHTML">
+        </div>
+
+        <div id="listings-posts" class="listings-section">
+            <p class="signal"> Selecciona una categoría. </p>
         </div>
 
     </main>
@@ -61,9 +61,20 @@
             if (input) {
                 input.value = cat;
             } else {
-                console.log('Category input not found (User might not be admin)');            }
+                console.log('Category input not found (User might not be admin)');
+            }
         }
     </script>
     <script> loadHeader("Anunciate!"); loadFooter();</script>
+    <script>
+        document.body.addEventListener('htmx:afterSwap', function (evt) {
+            if (evt.target.id === 'listings-posts') {
+                const first = evt.target.querySelector('.listing');
+                if (first) {
+                    first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    </script>
 </body>
 </html>
