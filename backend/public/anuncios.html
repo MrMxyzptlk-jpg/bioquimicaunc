@@ -43,14 +43,14 @@
                 onclick="setCategory('Ventas')"> Ventas </button>
         </div>
 
-        <div id="listings-posts" class="listings-section">
-            <p class="signal"> Selecciona una categoría. </p>
-        </div>
-
         <div id="listingForm" class="forum-form"
             hx-get="/listings/admin/form"
             hx-trigger="load"
             hx-swap="outerHTML">
+        </div>
+
+        <div id="listings-posts" class="listings-section">
+            <div class="signal"> Selecciona una categoría. </div>
         </div>
 
     </main>

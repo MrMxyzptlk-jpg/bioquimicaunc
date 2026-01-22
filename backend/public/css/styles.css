@@ -12,6 +12,10 @@
     --border-light: rgba(255, 255, 255, 0.566);
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -556,20 +560,6 @@ UTILITIES & FOOTER
         text-align: center;
     }
 
-    .nav-btn {
-        border-radius: 25px;
-        box-shadow: 3px 5px 10px 5px var(--shadow-color);
-        text-decoration: none;
-        color: white;
-        border: 2px solid white;
-        padding: 1rem 2rem;
-        font-size: 1.2rem;
-        text-align: center;
-        max-width: 300px;
-        transition: background 0.2s, color 0.2s;
-        background: var(--primary-bg);
-    }
-
     button{
         background: var(--primary-bg);
         color: white;
@@ -598,7 +588,7 @@ UTILITIES & FOOTER
         max-width: 800px;
     }
 
-    .subject-btn {
+    .subject-btn, .nav-btn {
         text-decoration: none;
         color: white;
         border: 2px solid white;
@@ -794,3 +784,62 @@ LOADING SPRITE ANIMATION
             rgba(255, 255, 255, 0) 90%
         );
     }
+
+/* =========================================
+   MOBILE & TABLET OPTIMIZATIONS
+   (Applies to anything smaller than an iPad in portrait)
+========================================= */
+@media (max-width: 480px) {
+
+    /* 1. LAYOUT: Reduce the massive desktop padding */
+    .layout-development, .left, .right, .layout-grid {
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .section-div {
+        max-width: 100%;
+    }
+
+
+    /* 2. BUTTONS: Fix the Forum/Listing buttons (Side-by-side, not stacked) */
+    .post-actions, .listing-actions {
+        display: flex;          /* Use Flex instead of Grid */
+        gap: 0.5rem;           /* Small gap between buttons */
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .post-action-btn, .listing-action-btn {
+        flex: 1;               /* Both buttons take equal width */
+        font-size: 0.85rem;    /* Smaller text */
+        padding: 0.6rem 0.2rem;/* Tappable area, but not huge */
+        border-radius: 8px;
+        white-space: nowrap;   /* Prevents text from breaking */
+    }
+
+    /* 3. CARDS: Make posts compact */
+    .post, .listing {
+        padding: 1rem;         /* Reduce internal padding */
+        width: 100%;           /* Ensure full width */
+        box-shadow: 2px 2px 4px 1px var(--shadow-color); /* Smaller shadow */
+    }
+
+    /* 4. NAV: Fix the huge Home/Subject buttons */
+    .nav-btn, .subject-btn {
+        font-size: 1rem;
+        padding: 0.8rem 1rem;
+        box-sizing: border-box;
+    }
+
+    /* 5. FORMS: Prevent them from looking squeezed */
+    .forum-form, .comment-form, .review-form {
+        padding: 1rem;
+        width: 100%;
+    }
+
+    /* Force 2 columns for checkboxes on mobile (instead of auto-fill) */
+    fieldset {
+        grid-template-columns: 1fr 1fr;
+    }
+}

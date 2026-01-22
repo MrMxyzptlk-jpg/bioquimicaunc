@@ -46,6 +46,7 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Registros </title>
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -53,7 +54,7 @@ export class AuthController {
                 <script src="/js/footer.js"></script>
             </head>
             <body>
-                <main class="layout-development">
+                <main class="layout-grid">
                     <div class="description-div">
                         <h2> Completa tus datos </h2>
                         <form
@@ -70,11 +71,6 @@ export class AuthController {
                         <div id="error"></div>
                     </div>
                 </main>
-                <footer class="site-footer">
-                    <p class="footer-quote">
-                        La educación no es algo que se imparte, sino que se comparte
-                    </p>
-                </footer>
                 <script> loadHeader("Registro"); loadFooter();</script>
             </body>
             </html>
@@ -122,6 +118,7 @@ export class AuthController {
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Iniciar sesión </title>
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -129,7 +126,7 @@ export class AuthController {
                 <script src="/js/footer.js"></script>
             </head>
             <body>
-                <main class="layout-development">
+                <main class="layout-grid">
                     <div class="description-div">
                         <h2> Completa tus datos </h2>
                         <form
@@ -148,11 +145,6 @@ export class AuthController {
                         </p>
                     </div>
                 </main>
-                <footer class="site-footer">
-                    <p class="footer-quote">
-                        La educación no es algo que se imparte, sino que se comparte
-                    </p>
-                </footer>
                 <script> loadHeader("Iniciar sesión"); loadFooter();</script>
             </body>
             </html>

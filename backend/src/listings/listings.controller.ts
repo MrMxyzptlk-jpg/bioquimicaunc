@@ -35,7 +35,7 @@ export class ListingsController {
                 hx-post="/listings"
                 hx-target="#listings-posts"
                 hx-swap="afterbegin"
-                hx-on::listing-created="this.reset()">
+                hx-on::after-request="this.reset();">
 
                 <input type="hidden" id="categoryInput" name="category" value="Particulares">
 
