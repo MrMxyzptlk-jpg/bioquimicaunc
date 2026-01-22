@@ -32,12 +32,8 @@ async function bootstrap() {
         }),
     );
 
-    app.use((req, res, next) => {
-        if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
-            return next();
-        }
-        return csrf()(req, res, next);
-    });
+    const csrfProtection = csrf();
+    app.use(csrfProtection);
 
 
     if (process.env.NODE_ENV === 'production') {
