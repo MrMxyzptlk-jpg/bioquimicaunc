@@ -13,23 +13,20 @@ function loadFooter() {
             <p class="footer-quote">
                 La educación no es algo que se imparte, sino que se comparte
             </p>
+            <p class="footer-copy"> &copy; 2026 <strong>Jerónimo A.P.</strong> </p>
         </footer>
     `;
 
     document.body.insertAdjacentHTML('beforeend', footerHTML);
 
-    let globalCsrfToken = null;
+    let csrfToken = null;
 
-    fetch('/csrf', { credentials: 'same-origin' }) // Important for cookies!
-        .then(res => res.text())
-        .then(token => { globalCsrfToken = token; })
-        .catch(err => console.error("Failed to load CSRF token:", err));
-
-    // Attach token to HTMX requests
-    document.body.addEventListener('htmx:configRequest', (event) => {
-        if (globalCsrfToken) {
-            event.detail.headers['X-CSRF-Token'] = globalCsrfToken;
+    document.body.addEventListener('htmx:configRequest', async (event) => {
+        if (!csrfToken) {
+            const res = await fetch('/csrf');
+            csrfToken = await res.text();
         }
+
+        event.detail.headers['X-CSRF-Token'] = csrfToken;
     });
 }
-

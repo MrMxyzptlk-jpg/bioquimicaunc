@@ -188,7 +188,8 @@ export class PostsController {
             <div class="post" id="post-${post.id}">
                 <h2> ${escapeHtml(post.title)} </h2>
                 <small>
-                    ${escapeHtml(post.author.name)} | ${timeAgo(post.createdAt)}
+                    ${escapeHtml(post.author.name)}
+                    | ${timeAgo(post.createdAt)}
                     ${isEdited ? `[Editado: ${timeAgo(post.updatedAt)}]` : ''}
                 </small>
                 <p> ${escapeHtml(post.content)} </p>
