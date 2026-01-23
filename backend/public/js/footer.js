@@ -13,6 +13,7 @@ function loadFooter() {
             <p class="footer-quote">
                 La educación no es algo que se imparte, sino que se comparte
             </p>
+            <p class="footer-copy"> &copy; 2026 <strong>Jerónimo A.P.</strong> </p>
         </footer>
     `;
 

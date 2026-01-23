@@ -559,14 +559,21 @@ UTILITIES & FOOTER
         background-color: var(--primary-bg);
         color: white;
         font-family: "Libre Baskerville", serif;
-        font-size: 1rem;
+        font-size: 0.95rem;
 
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr auto;
         align-items: center;
 
-        padding: 0.2rem 0.1rem;
         text-align: center;
+    }
+
+    .footer-copy {
+        text-align: right;
+        white-space: nowrap;
+        opacity: 0.8;
+        padding-right: 8px;
+        font-size: 0.85rem;
     }
 
     button{
@@ -827,8 +834,18 @@ LOADING SPRITE ANIMATION
 
 /* =========================================
    MOBILE & TABLET OPTIMIZATIONS
-   (Applies to anything smaller than an iPad in portrait)
 ========================================= */
+@media (max-width: 600px) {
+    .site-footer {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .footer-copy {
+        text-align: center;
+    }
+}
+
 @media (max-width: 480px) {
 
     /* 1. LAYOUT: Reduce the massive desktop padding */
