@@ -18,15 +18,24 @@ function loadFooter() {
 
     document.body.insertAdjacentHTML('beforeend', footerHTML);
 
-    let csrfToken = null;
+    let globalCsrfToken = null;
 
-    document.body.addEventListener('htmx:configRequest', async (event) => {
-        if (!csrfToken) {
-            const res = await fetch('/csrf');
-            csrfToken = await res.text();
+    fetch('/csrf', { credentials: 'same-origin' }) // Important for cookies!
+        .then(res => res.text())
+        .then(token => {
+            console.log("CSRF Token loaded");
+            globalCsrfToken = token;
+        })
+        .catch(err => console.error("Failed to load CSRF token:", err));
+
+    // Attach token to HTMX requests
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        if (globalCsrfToken) {
+            event.detail.headers['X-CSRF-Token'] = globalCsrfToken;
+        } else {
+            // Optional: warn user if action is critical
+            console.warn("HTMX request attempted before CSRF token loaded.");
         }
-
-        event.detail.headers['X-CSRF-Token'] = csrfToken;
     });
 }
 
