@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, Session } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Session, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { Response } from 'express';
@@ -15,10 +15,14 @@ export class AuthController {
     ) {}
 
     @Get('header')
-    async header(@Session() session: Record<string, any>) {
+    async header(
+        @Session() session: Record<string, any>,
+        @Query('context') context?: string
+    ) {
+        const isIndex = context === 'index';
         if (!session.userId) {
             return `
-                <div class="auth-header">
+                <div class="auth-header ${isIndex ? 'auth-index' : ''}">
                     <a href="/auth/login" class="log-btn"> Iniciar sesión </a>
                     <a href="/auth/register" class="log-btn"> Registrarse </a>
                 </div>
@@ -28,7 +32,7 @@ export class AuthController {
         const user = await this.usersRepo.findOneBy({ id: session.userId });
 
         return `
-            <div class="auth-header">
+            <div class="auth-header ${isIndex ? 'auth-index' : ''}">
                 <span> Hola, <strong>${user?.name}</strong></span>
 
                 <form hx-post="/auth/logout">

@@ -27,6 +27,13 @@
           <i class="fa-brands fa-youtube fa-2x"></i>
         </a>
       </div>
+
+        <div
+            id="auth-header"
+            hx-get="/auth/header?context=index"
+            hx-trigger="load"
+            hx-swap="outerHTML">
+        </div>
     </section>
 
     <section class="right">
