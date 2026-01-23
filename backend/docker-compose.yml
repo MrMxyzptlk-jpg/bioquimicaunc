@@ -26,6 +26,7 @@ services:
       DB_PASSWORD: bioquimicaunc_pass
       DB_DATABASE: bioquimicaunc_db
       SESSION_SECRET: super-secret-dev-key
+      RESEND_API_KEY: ${RESEND_API_KEY}
     depends_on:
       - db
     volumes:
