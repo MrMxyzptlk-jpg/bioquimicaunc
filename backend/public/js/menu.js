@@ -14,7 +14,6 @@ function loadHeader(pageTitle) {
                 <a href="/anuncios.html"> Anunciate! </a><br>
                 <a href="/recursos.html"> Recursos </a><br>
                 <a href="/developing.html"> Derechos </a><br>
-                <a href="/sugerencias.html"> Sugerencias </a><br>
             </nav>
             <h1 class="header-quote"> ${pageTitle} </h1>
 

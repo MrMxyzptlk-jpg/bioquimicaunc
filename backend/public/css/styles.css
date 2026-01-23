@@ -378,24 +378,6 @@ FORUM POSTS
         margin-top: 0.5rem;
     }
 
-    .feedback-success {
-        color: #2dc937;
-        font-weight: bold;
-        text-align: center;
-        background: var(--input-bg);
-        border: 2px solid #2dc937;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        box-shadow: 0 4px 10px rgba(45, 201, 55, 0.2);
-        animation: fadeSlideIn 0.4s ease-out;
-    }
-
-    @keyframes fadeSlideIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
 /* =========================================
 FORUM/LISTINGS POSTS
 ========================================= */
@@ -693,7 +675,7 @@ UTILITIES & FOOTER
 /* =========================================
 FORMS & INPUTS
 ========================================= */
-    .forum-form, .comment-form, .review-form, .feedback-form {
+    .forum-form, .comment-form, .review-form {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -716,8 +698,7 @@ FORMS & INPUTS
     .comment-form input,
     .comment-form textarea,
     .review-form input,
-    .review-form textarea,
-    .feedback-form textarea
+    .review-form textarea
     {
         font-family: system-ui;
         width: 95%;
