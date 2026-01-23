@@ -103,6 +103,14 @@ HEADER & NAVIGATION
         transform: translateY(-50%);
     }
 
+    .auth-header.auth-index {
+        justify-content: center;
+        position: static;
+        right: auto;
+        top: auto;
+        margin-top: 1rem;
+    }
+
     .log-btn {
         font-size: 0.9rem;
         text-align: center;
