@@ -4,12 +4,13 @@ import {
     ExceptionFilter,
     ForbiddenException,
     BadRequestException,
+    NotFoundException,
     HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { renderHtmxModal } from './htmx-modal';
 
-@Catch(ForbiddenException, BadRequestException)
+@Catch(ForbiddenException, BadRequestException, NotFoundException)
 export class HtmxExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();

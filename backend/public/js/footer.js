@@ -22,19 +22,13 @@ function loadFooter() {
 
     fetch('/csrf', { credentials: 'same-origin' }) // Important for cookies!
         .then(res => res.text())
-        .then(token => {
-            console.log("CSRF Token loaded");
-            globalCsrfToken = token;
-        })
+        .then(token => { globalCsrfToken = token; })
         .catch(err => console.error("Failed to load CSRF token:", err));
 
     // Attach token to HTMX requests
     document.body.addEventListener('htmx:configRequest', (event) => {
         if (globalCsrfToken) {
             event.detail.headers['X-CSRF-Token'] = globalCsrfToken;
-        } else {
-            // Optional: warn user if action is critical
-            console.warn("HTMX request attempted before CSRF token loaded.");
         }
     });
 }
