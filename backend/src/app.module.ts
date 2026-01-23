@@ -14,6 +14,7 @@ import { ListingsPost } from './listings/entities/listing.entity';
 import { Review } from './reviews/entities/review.entity';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -65,6 +66,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     ReviewsModule,
 
     AuthModule,
+
+    FeedbackModule
   ],
   controllers: [CsrfController],
   providers: [{
