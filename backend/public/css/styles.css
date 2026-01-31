@@ -759,8 +759,38 @@ FORMS & INPUTS
 }
 
 /* =========================================
-LOG-IN/SIGN-IN ERRORS
+LOG-IN/SIGN-IN
 ========================================= */
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-wrapper input, .description-div input {
+        width: 90%;
+    }
+
+    .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .toggle-password svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .toggle-password:hover {
+        background: unset;
+        color: var(--accent-pink);
+        transform: translateY(-50%);
+    }
 
     /* Base error style */
     #error .error,

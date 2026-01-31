@@ -52,9 +52,11 @@ export class AuthController {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Registros </title>
+                <link rel="icon" href="/assets/tab-logo.png" type="image/tab-icon">
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
                 <script src="/js/menu.js"></script>
+                <script src="/js/password-field.js"></script>
                 <script src="/js/footer.js"></script>
             </head>
             <body>
@@ -67,8 +69,8 @@ export class AuthController {
                             hx-swap="innerHTML">
 
                             <input name="email" type="email" placeholder="Email" required autocomplete="email"/>
-                            <input name="password" type="password" placeholder="Contraseña" required autocomplete="new-password"/>
                             <input name="name" placeholder="Usuario" required autocomplete="username"/>
+                            <div id="password-slot"></div>
                             <br>
                             <button type="submit" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Registrarse </button>
                         </form>
@@ -76,7 +78,11 @@ export class AuthController {
                         <div id="error"></div>
                     </div>
                 </main>
-                <script> loadHeader("Registro"); loadFooter();</script>
+                <script>
+                    loadHeader("Registro");
+                    loadFooter();
+                    document.getElementById('password-slot').innerHTML = passwordField({ id: 'password' });
+                </script>
             </body>
             </html>
         `;
@@ -125,9 +131,11 @@ export class AuthController {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title> Iniciar sesión </title>
+                <link rel="icon" href="/assets/tab-logo.png" type="image/tab-icon">
                 <link rel="stylesheet" href="/css/styles.css">
                 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
                 <script src="/js/menu.js"></script>
+                <script src="/js/password-field.js"></script>
                 <script src="/js/footer.js"></script>
             </head>
             <body>
@@ -140,7 +148,7 @@ export class AuthController {
                             hx-swap="innerHTML">
 
                             <input name="email" type="email" placeholder="Email" required />
-                            <input name="password" type="password" placeholder="Contraseña" required />
+                            <div id="password-slot"></div>
                             <br>
                             <button type="submit" class="log-btn" style="margin-top: 1rem;margin-bottom: 0.5rem;"> Iniciar sesión </button>
                         </form>
@@ -150,7 +158,11 @@ export class AuthController {
                         <a class="log-btn" href="/auth/register"> Registrarse </a>
                     </div>
                 </main>
-                <script> loadHeader("Iniciar sesión"); loadFooter();</script>
+                <script>
+                    loadHeader("Iniciar sesión");
+                    loadFooter();
+                    document.getElementById('password-slot').innerHTML = passwordField({ id: 'password' });
+                </script>
             </body>
             </html>
         `);
