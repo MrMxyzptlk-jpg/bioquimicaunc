@@ -38,7 +38,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         isGlobal: true,
         envFilePath:
             process.env.NODE_ENV === 'production'
-            ? undefined
+            ? '../.env'
             : '../.env.development', // Asuming we run 'npm run start' from /backend
     }),
 
