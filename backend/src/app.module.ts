@@ -36,10 +36,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     // Load the Environment Variables
     ConfigModule.forRoot({
         isGlobal: true,
-        envFilePath:
-            process.env.NODE_ENV === 'production'
-            ? '../.env'
-            : '../.env.development', // Asuming we run 'npm run start' from /backend
+        envFilePath: ['~/apps/forum_api/backend/.env', '.env'],
     }),
 
     // Configure TypeORM Asynchronously
@@ -47,29 +44,17 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: async (configService: ConfigService) => {
-            const isProd = configService.get('NODE_ENV') === 'production';
 
-            return isProd
-            ? {
-                type: 'postgres',
-                url: configService.get<string>('DATABASE_URL'),
-                ssl: {
-                    rejectUnauthorized: false,
-                },
-                entities: [ForumPost, Comment, User, ListingsPost, Review],
-                synchronize: false,
-                }
-            : {
-                type: 'postgres',
-                host: configService.get<string>('DB_HOST'),
-                port: Number(configService.get<string>('DB_PORT')),
-                username: configService.get<string>('DB_USER'),
-                password: configService.get<string>('DB_PASSWORD'),
-                database: configService.get<string>('DB_NAME'),
-                entities: [ForumPost, Comment, User, ListingsPost, Review],
-                synchronize: false,
-                };
-        },
+        return {
+          type: 'postgres',
+          url: configService.get<string>('DATABASE_URL'),
+          ssl: {
+            rejectUnauthorized: false,
+          },
+          entities: [ForumPost, Comment, User, ListingsPost, Review],
+          synchronize: true,
+        };
+      },
     }),
 
 
