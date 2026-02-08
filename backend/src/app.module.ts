@@ -46,17 +46,32 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     TypeOrmModule.forRootAsync({
         imports: [ConfigModule],
         inject: [ConfigService],
-        useFactory: async(configService: ConfigService) => ({
-            type: 'postgres',
-            host: configService.get<string>('DB_HOST'),
-            port: Number(configService.get<string>('DB_PORT')),
-            username: configService.get<string>('DB_USER'),
-            password: configService.get<string>('DB_PASSWORD'),
-            database: configService.get<string>('DB_NAME'),
-            entities: [ForumPost, Comment, User, ListingsPost, Review],
-            synchronize: false,
-        }),
+        useFactory: async (configService: ConfigService) => {
+            const isProd = configService.get('NODE_ENV') === 'production';
+
+            return isProd
+            ? {
+                type: 'postgres',
+                url: configService.get<string>('DATABASE_URL'),
+                ssl: {
+                    rejectUnauthorized: false,
+                },
+                entities: [ForumPost, Comment, User, ListingsPost, Review],
+                synchronize: false,
+                }
+            : {
+                type: 'postgres',
+                host: configService.get<string>('DB_HOST'),
+                port: Number(configService.get<string>('DB_PORT')),
+                username: configService.get<string>('DB_USER'),
+                password: configService.get<string>('DB_PASSWORD'),
+                database: configService.get<string>('DB_NAME'),
+                entities: [ForumPost, Comment, User, ListingsPost, Review],
+                synchronize: false,
+                };
+        },
     }),
+
 
     UsersModule,
 
