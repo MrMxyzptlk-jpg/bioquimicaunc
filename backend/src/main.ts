@@ -20,6 +20,7 @@ async function bootstrap() {
 
     app.use(
         session({
+            name: '__Host-forum-session',
             secret: process.env.SESSION_SECRET ?? 'dev-secret',
             resave: false,
             saveUninitialized: false,
