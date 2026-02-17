@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, IsEnum, IsArray, ArrayNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString, MaxLength, IsEnum, IsArray, ArrayNotEmpty, IsEmail } from "class-validator";
 import { ListingModality, ListingSubject } from "../entities/listing.entity";
 
 export class UpdateListingDto {
@@ -15,6 +15,13 @@ export class UpdateListingDto {
     @IsString()
     @IsNotEmpty()
     price: string;
+
+    @IsEmail()
+    @IsNotEmpty()
+    contactEmail: string;
+
+    @IsString()
+    contactCell?: string;
 
     @IsArray()
     @ArrayNotEmpty()
