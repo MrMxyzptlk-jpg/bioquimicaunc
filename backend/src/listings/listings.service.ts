@@ -24,6 +24,8 @@ export class ListingsService {
             modality: data.modality,
             subjects: data.subjects,
             category: data.category,
+            contactEmail: data.contactEmail,
+            contactCell: data.contactCell,
             author
         });
         return this.listingRepository.save(listingPost)
@@ -41,6 +43,8 @@ export class ListingsService {
         if (data.price !== undefined) listingPost.price = data.price;
         if (Array.isArray(data.modality) && data.modality.length > 0) listingPost.modality = data.modality;
         if (Array.isArray(data.subjects) && data.subjects.length > 0) listingPost.subjects = data.subjects;
+        if (data.contactEmail !== undefined) listingPost.contactEmail = data.contactEmail;
+        if (data.contactCell !== undefined) listingPost.contactCell = data.contactCell;
 
         return this.listingRepository.save(listingPost);
     }

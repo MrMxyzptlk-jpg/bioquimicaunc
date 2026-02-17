@@ -63,6 +63,15 @@ export class ListingsController {
                     data-maxlength="50">
                 <small class="char-counter"></small>
 
+                <input
+                    name="contactEmail"
+                    placeholder="Email"
+                    required>
+
+                <input
+                    name="contactCell"
+                    placeholder="Celular (opcional)">
+
                 <fieldset>
                     <legend>Modalidad</legend>
                     ${renderCheckboxGroup('modality', ListingModality)}
@@ -209,9 +218,7 @@ export class ListingsController {
                         placeholder="Descripción del servicio"
                         data-maxlength="5000"
                         maxlength="5000"
-                        required>
-                        ${escapeHtml(listing.content)}
-                    </textarea>
+                        required>${escapeHtml(listing.content)}</textarea>
                     <small class="char-counter"></small>
 
                     <input
@@ -221,6 +228,17 @@ export class ListingsController {
                         required
                         maxlength="50"
                         data-maxlength="50">
+
+                <input
+                    name="contactEmail"
+                    placeholder="Email"
+                    value="${escapeHtml(listing.contactEmail)}"
+                    required>
+
+                <input
+                    name="contactCell"
+                    placeholder="Celular (opcional)"
+                    value="${escapeHtml(listing.contactCell)}">
 
                     <fieldset>
                         <legend>Modalidad</legend>
@@ -294,6 +312,17 @@ export class ListingsController {
                         Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
                     </li>
                 </ul>
+
+                <a href="mailto:${listing.contactEmail}">
+                ${listing.contactEmail}
+                </a>
+
+                ${listing.contactCell ?
+                `<a href="https://wa.me/${listing.contactCell.replace(/\D/g, '')}" target="_blank">
+                    Contactar por WhatsApp
+                </a>`
+                : ''
+                }
 
                 <small>
                     ${listing.ratingCount !== 0 ? `

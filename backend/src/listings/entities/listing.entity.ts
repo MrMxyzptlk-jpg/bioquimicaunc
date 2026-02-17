@@ -40,6 +40,12 @@ export class ListingsPost {
     @Column({ nullable: true })
     price: string;
 
+    @Column({ length: 254 })
+    contactEmail: string;
+
+    @Column({ length: 30, nullable: true })
+    contactCell: string;
+
     @Column({
         type: 'enum',
         enum: ListingModality,

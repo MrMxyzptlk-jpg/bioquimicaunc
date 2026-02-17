@@ -416,6 +416,10 @@ FORUM/LISTINGS POSTS
         font-family: system-ui;
     }
 
+    .listing a {
+        color: #a1d9e5;
+    }
+
     .post-actions, .listing-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
