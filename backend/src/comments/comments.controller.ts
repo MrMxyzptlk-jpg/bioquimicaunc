@@ -117,13 +117,13 @@ export class CommentsController {
                     <small class="char-counter"></small>
 
                     <div class="comment-actions">
-                        <button type="submit"> Guardar </button>
                         <button type="button"
                             hx-get="/comments/${comment.id}"
                             hx-target="#comment-${comment.id}"
                             hx-swap="outerHTML">
-                            Cancel
+                            Cancelar
                         </button>
+                        <button type="submit"> Guardar </button>
                     </div>
                 </form>
             </div>
@@ -178,17 +178,18 @@ export class CommentsController {
                 <div class="comment-actions">
                     ${canEdit ? `
                         <button
-                            hx-get="/comments/${comment.id}/edit"
-                            hx-target="#comment-${comment.id}"
-                            hx-swap="outerHTML">
-                            Editar
-                        </button>
-                        <button
                             hx-delete="/comments/${comment.id}"
                             hx-target="#comment-${comment.id}"
                             hx-swap="outerHTML"
                             hx-confirm="¿Borrar comentario?">
                             Eliminar
+                        </button>
+
+                        <button
+                            hx-get="/comments/${comment.id}/edit"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML">
+                            Editar
                         </button>
                     ` : ''}
                 </div>
@@ -245,18 +246,18 @@ export class CommentsController {
                 ${ canEdit ? `
                     <div class="comment-actions">
                         <button
-                            hx-get="/comments/${comment.id}/edit"
-                            hx-target="#comment-${comment.id}"
-                            hx-swap="outerHTML">
-                            Editar
-                        </button>
-
-                        <button
                             hx-delete="/comments/${comment.id}"
                             hx-target="#comment-${comment.id}"
                             hx-swap="outerHTML"
                             hx-confirm="¿Borrar comentario?">
                             Eliminar
+                        </button>
+
+                        <button
+                            hx-get="/comments/${comment.id}/edit"
+                            hx-target="#comment-${comment.id}"
+                            hx-swap="outerHTML">
+                            Editar
                         </button>
                     </div>
                 ` : ''}

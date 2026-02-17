@@ -433,13 +433,14 @@ FORUM/LISTINGS POSTS
     }
 
     .rating {
-    display: inline-flex;
-    flex-direction: row-reverse; /* KEY */
-    gap: 4px;
+        display: inline-flex;
+        flex-direction: row-reverse; /* KEY */
+        gap: 4px;
     }
 
     .rating input {
-        display: none;
+        position: absolute;
+        opacity: 0;
     }
 
     .rating label {
@@ -470,7 +471,8 @@ COMMENTS/REVIEWS
         margin-top: 0.4rem;
     }
 
-    .comment-wrapper input, .review-wrapper input[type="text"] {
+    .comment-wrapper input,
+    .review-wrapper input{
         width: 90%;
         padding: 0.3rem;
         font-size: 0.8rem;
@@ -529,7 +531,7 @@ COMMENTS/REVIEWS
         text-align: right;
     }
 
-    .comments-section, .review-section {
+    .comments-section, .reviews-section {
         width: 100%;
         margin-top: 1rem;
     }
