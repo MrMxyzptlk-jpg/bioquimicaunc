@@ -52,7 +52,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
             rejectUnauthorized: false,
           },
           entities: [ForumPost, Comment, User, ListingsPost, Review],
-          synchronize: true,
+          synchronize: false,
         };
       },
     }),
