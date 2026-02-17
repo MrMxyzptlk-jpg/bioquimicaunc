@@ -95,7 +95,28 @@ export class ReviewsController {
                     hx-swap="outerHTML"
                     class="review-form">
 
+                    <label>
+                        Calificación:
+                        <div class="rating">
+                            <input type="radio" name="rating" id="edit-rate-5-${review.id}" value="5" ${review.rating === 5 ? 'checked' : ''} required>
+                            <label for="edit-rate-5-${review.id}">${featherIcon}</label>
+
+                            <input type="radio" name="rating" id="edit-rate-4-${review.id}" value="4" ${review.rating === 4 ? 'checked' : ''}>
+                            <label for="edit-rate-4-${review.id}">${featherIcon}</label>
+
+                            <input type="radio" name="rating" id="edit-rate-3-${review.id}" value="3" ${review.rating === 3 ? 'checked' : ''}>
+                            <label for="edit-rate-3-${review.id}">${featherIcon}</label>
+
+                            <input type="radio" name="rating" id="edit-rate-2-${review.id}" value="2" ${review.rating === 2 ? 'checked' : ''}>
+                            <label for="edit-rate-2-${review.id}">${featherIcon}</label>
+
+                            <input type="radio" name="rating" id="edit-rate-1-${review.id}" value="1" ${review.rating === 1 ? 'checked' : ''}>
+                            <label for="edit-rate-1-${review.id}">${featherIcon}</label>
+                        </div>
+                    </label>
+
                     <textarea
+                        type="text"
                         name="content"
                         required
                         data-maxlength="1000"
@@ -103,13 +124,13 @@ export class ReviewsController {
                     <small class="char-counter"></small>
 
                     <div class="review-actions">
-                        <button type="submit"> Guardar </button>
                         <button type="button"
                             hx-get="/reviews/${review.id}"
                             hx-target="#review-${review.id}"
                             hx-swap="outerHTML">
-                            Cancel
+                            Cancelar
                         </button>
+                        <button type="submit"> Guardar </button>
                     </div>
                 </form>
             </div>

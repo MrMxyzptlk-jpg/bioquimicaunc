@@ -103,6 +103,7 @@ HEADER & NAVIGATION
         transform: translateY(-50%);
     }
 
+
     .auth-header.auth-index {
         justify-content: center;
         position: static;
@@ -377,24 +378,6 @@ FORUM POSTS
         margin-top: 0.5rem;
     }
 
-    .feedback-success {
-        color: #2dc937;
-        font-weight: bold;
-        text-align: center;
-        background: var(--input-bg);
-        border: 2px solid #2dc937;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        box-shadow: 0 4px 10px rgba(45, 201, 55, 0.2);
-        animation: fadeSlideIn 0.4s ease-out;
-    }
-
-    @keyframes fadeSlideIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
 /* =========================================
 FORUM/LISTINGS POSTS
 ========================================= */
@@ -450,13 +433,14 @@ FORUM/LISTINGS POSTS
     }
 
     .rating {
-    display: inline-flex;
-    flex-direction: row-reverse; /* KEY */
-    gap: 4px;
+        display: inline-flex;
+        flex-direction: row-reverse; /* KEY */
+        gap: 4px;
     }
 
     .rating input {
-        display: none;
+        position: absolute;
+        opacity: 0;
     }
 
     .rating label {
@@ -487,7 +471,8 @@ COMMENTS/REVIEWS
         margin-top: 0.4rem;
     }
 
-    .comment-wrapper input, .review-wrapper input[type="text"] {
+    .comment-wrapper input,
+    .review-wrapper input{
         width: 90%;
         padding: 0.3rem;
         font-size: 0.8rem;
@@ -546,7 +531,7 @@ COMMENTS/REVIEWS
         text-align: right;
     }
 
-    .comments-section, .review-section {
+    .comments-section, .reviews-section {
         width: 100%;
         margin-top: 1rem;
     }
@@ -684,10 +669,15 @@ UTILITIES & FOOTER
         margin-bottom: 10px;
     }
 
+    /*To be implemented for distinguishing admins*/
+    .is-admin {
+        color: var(--accent-blue);
+    }
+
 /* =========================================
 FORMS & INPUTS
 ========================================= */
-    .forum-form, .comment-form, .review-form, .feedback-form {
+    .forum-form, .comment-form, .review-form {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -710,8 +700,7 @@ FORMS & INPUTS
     .comment-form input,
     .comment-form textarea,
     .review-form input,
-    .review-form textarea,
-    .feedback-form textarea
+    .review-form textarea
     {
         font-family: system-ui;
         width: 95%;
@@ -766,8 +755,10 @@ FORMS & INPUTS
         height: 1.1em;
         margin-right: 0.5rem;
         flex-shrink: 0; /* CRITICAL: Prevents long text from squishing the checkbox */
+
+        /* Optional: Makes the checkbox color match your theme */
         accent-color: var(--accent-blue);
-    }
+}
 
 /* =========================================
 LOG-IN/SIGN-IN
@@ -886,6 +877,7 @@ LOADING SPRITE ANIMATION
         text-align: center;
     }
 }
+
 @media (max-width: 480px) {
 
     /* 1. LAYOUT: Reduce the massive desktop padding */

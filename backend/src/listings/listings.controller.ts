@@ -241,13 +241,13 @@ export class ListingsController {
                     </fieldset>
 
                     <div class="listing-actions">
-                        <button type="submit"> Guardar </button>
                         <button type="button"
                             hx-get="/listings/${listing.id}/fragment"
                             hx-target="#listing-${listing.id}"
                             hx-swap="outerHTML">
                             Cancelar
                         </button>
+                        <button type="submit"> Guardar </button>
                     </div>
                 </form>
             </div>
@@ -298,7 +298,7 @@ export class ListingsController {
                 <small>
                     ${listing.ratingCount !== 0 ? `
                         ${this.renderFeatherRating(averageRating, listing.id)}
-                        <p class="rating-container"> ${averageRating.toFixed(1)}/5 | ${listing.ratingCount} ${listing.ratingCount > 1 ? + 'calificaciones': 'calificación'} </p>
+                        <p class="rating-container"> ${averageRating.toFixed(1)}/5.0 | ${listing.ratingCount} ${listing.ratingCount > 1 ? + 'calificaciones': 'calificación'} </p>
                         `
                          : '<p class="rating-container text-muted";">Sin calificar</p>'}
                 </small>
@@ -361,7 +361,13 @@ export class ListingsController {
 
                             </label>
 
-                            <textarea type="text" name="content" placeholder="Comparte tu opinión..." required data-maxlength="1000" maxlength="1000"></textarea>
+                            <textarea
+                                type="text"
+                                name="content"
+                                placeholder="Comparte tu opinión..."
+                                required
+                                data-maxlength="1000"
+                                maxlength="1000"></textarea>
                             <small class="char-counter"></small>
                             <button type="submit" class="review-btn"> Enviar </button>
                         </form>
