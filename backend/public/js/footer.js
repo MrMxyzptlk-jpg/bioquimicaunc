@@ -30,4 +30,3 @@ function loadFooter() {
         event.detail.headers['X-CSRF-Token'] = csrfToken;
     });
 }
-
