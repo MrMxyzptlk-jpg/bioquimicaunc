@@ -43,7 +43,7 @@ export class ListingsPost {
     @Column({ length: 254 })
     contactEmail: string;
 
-    @Column({ length: 30, nullable: true })
+    @Column({ length: 30, default: '' })
     contactCell: string;
 
     @Column({
