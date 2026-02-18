@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bioquimicaunc/Sugerencias</title>
+    <link rel="icon" href="./assets/tab-logo.webp" type="image/tab-icon">
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="./js/menu.js"></script>
@@ -21,15 +22,14 @@
             hx-target="#feedback-result"
             hx-swap="innerHTML"
             hx-on::after-request="this.reset();">
-            <img src="./assets/suggetions-crow.png" alt="cuervo de sugerencias" style="max-width: 200px;"></img>
+            <img src="./assets/suggetions-crow.webp" alt="cuervo de sugerencias" style="max-width: 200px;"></img>
             <textarea
                 name="content"
                 placeholder="Ideas, bugs, sugerencias…"
                 required
-                maxlength="1000"
-            ></textarea>
-
-            <button type="submit">Enviar</button>
+                maxlength="1000"></textarea>
+            <div></div>
+            <button type="submit" style="max-width: 100;">Enviar</button>
         </form>
 
         <div id="feedback-result"></div>

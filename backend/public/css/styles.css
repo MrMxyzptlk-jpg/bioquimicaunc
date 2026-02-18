@@ -797,7 +797,75 @@ FORMS & INPUTS
         box-shadow: 3px 3px 2px 2px var(--shadow-color);
     }
 
-    .forum-form {
+    .feedback-form {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "icon input"
+            "icon button";
+        gap: 1rem;
+        align-items: start;
+
+
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+        background: var(--input-bg, #f4f4f4);
+        border: 2px solid white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 3px 3px 2px 2px var(--shadow-color, rgba(0,0,0,0.1));
+    }
+
+    .feedback-form img {
+        grid-area: icon;
+        width: 120px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .feedback-form textarea {
+        grid-area: input;
+        width: 100%;
+        min-height: 100px;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .feedback-form button {
+        grid-area: button;
+        justify-self: end;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .feedback-form div:empty {
+        display: none;
+    }
+
+    @media (max-width: 480px) {
+        .feedback-form {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "icon"
+                "input"
+                "button";
+            justify-items: center;
+        }
+
+        .feedback-form img {
+            width: 150px;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-form button {
+            width: 100%;
+        }
+    }
+
+    .forum-form,  .feedback-form {
         max-width: 1000px;
     }
 
@@ -810,7 +878,8 @@ FORMS & INPUTS
     .comment-form input,
     .comment-form textarea,
     .review-form input,
-    .review-form textarea
+    .review-form textarea,
+    .feedback-form textarea
     {
         font-family: system-ui;
         width: 95%;
