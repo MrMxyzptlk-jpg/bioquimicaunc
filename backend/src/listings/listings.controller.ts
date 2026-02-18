@@ -301,17 +301,14 @@ export class ListingsController {
                 <h2> ${escapeHtml(listing.title)} </h2>
                 <p> ${escapeHtml(listing.content)} </p>
 
-                <ul class="rating-info" style="list-style-type: none;">
-                    <li>
-                        Precio: &nbsp;&nbsp; ${listing.price}
-                    </li>
-                    <li>
-                        Modalidad: ${escapeHtml(listing.modality.join(', '))}
-                    </li>
-                    <li>
-                        Materias: &thinsp; ${escapeHtml(listing.subjects.join(', '))}
-                    </li>
-                </ul>
+                <div class="listing-meta">
+                    <div><strong>Precio</strong><br> ${listing.price}
+                    </div>
+                    <div><strong>Modalidad</strong><br> ${escapeHtml(listing.modality.join(', '))}
+                    </div>
+                    <div><strong>Materias</strong><br> ${escapeHtml(listing.subjects.join(', '))}
+                    </div>
+                </div>
 
                 <a href="mailto:${listing.contactEmail}">
                 ${listing.contactEmail}

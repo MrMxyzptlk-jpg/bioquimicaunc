@@ -184,6 +184,7 @@ export class CommentsController {
                             hx-confirm="¿Borrar comentario?">
                             Eliminar
                         </button>
+
                         <button
                             hx-get="/comments/${comment.id}/edit"
                             hx-target="#comment-${comment.id}"

@@ -327,37 +327,58 @@ LAYOUT & BACKGROUNDS
     }
 
 /* =========================================
-FORUM POSTS
+Generic containers
 ========================================= */
-    .description-div {
-        text-align: center;
-        color: white;
-        border: 2px solid white;
-        background: var(--input-bg);
-        padding: 0.5rem 1.5rem;
-        font-size: 1.2rem;
-        box-shadow: 5px 5px 15px 5px var(--shadow-color);
-        border-radius: 8px;
-    }
-
-    .description-div h2 {
-        font-family: 'Courier New';
-    }
-
+    /* Shared base styles for container boxes */
+    .description-div,
     .section-div {
+        width: 100%;               /* distinct from max-width */
+        max-width: 900px;          /* distinct from width */
+        margin: 0 auto 2rem auto;  /* Center horizontally + bottom spacing */
+
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
         justify-content: center;
+
         color: white;
         border: 2px solid white;
-        background: var(--card-bg);
-        padding: 0.5rem 1.5rem;
-        font-size: 1.2rem;
-        max-width: 75%;
-        box-shadow: 3px 2px 5px 2px var(--shadow-color);
+        padding: 1.5rem 2rem;      /* spacious padding for desktop */
         border-radius: 8px;
+        box-sizing: border-box;    /* Vital: padding won't expand width */
+    }
+
+    /* Specific Backgrounds/Shadows */
+    .description-div {
+        font-size: 1.1rem;
+        background: var(--input-bg);
+        box-shadow: 5px 5px 15px 5px var(--shadow-color);
+    }
+
+    .description-div h2 {
+        font-family: 'Courier New', monospace;
+        margin-top: 0;
+    }
+
+    .section-div {
+        font-size: 1.rem;
+        background: var(--card-bg);
+        box-shadow: 3px 2px 5px 2px var(--shadow-color);
+    }
+
+    /* MOBILE OPTIMIZATION for these divs */
+    @media (max-width: 600px) {
+        .description-div,
+        .section-div {
+            max-width: 100%;       /* Take full screen width */
+            padding: 1rem;         /* Reduce padding to save space */
+            font-size: 1rem;       /* Reduce font size for readability */
+            margin-bottom: 1.5rem;
+
+            /* Reduce shadow size so it doesn't bleed off-screen */
+            box-shadow: 3px 3px 0px 0px var(--shadow-color);
+        }
     }
 
     .signal{
@@ -379,41 +400,115 @@ FORUM POSTS
     }
 
 /* =========================================
+RESOURCES
+========================================= */
+    .resources-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .resource-info {
+        flex: 1;
+    }
+
+    .resource-info h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: var(--accent-blue); /* Optional: distinct header color */
+    }
+
+    .resource-info img {
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 600px) {
+        .resource-info img {
+            margin-bottom: 1rem;
+            width: 120px; /* Make it slightly bigger on mobile focus */
+            height: 120px;
+        }
+    }
+
+/* =========================================
 FORUM/LISTINGS POSTS
 ========================================= */
     .forum-section, .listings-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 2rem;
         width: 100%;
+        max-width: 1200px;
         margin: 0 auto;
+        padding: 1rem;
+        box-sizing: border-box;
     }
 
     .post, .listing {
-        width: 95%;
+        width: 100%;
+        max-width: 700px;
+        justify-self: center;
+        padding: 1.5rem;
+        gap: 0.8rem;
+        font-size: 1rem;
+
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: left;
-
         color: white;
         border: 2px solid var(--border-light);
         background: var(--card-bg);
-        gap: 1rem;
-        padding: 1.5rem;
-        font-size: 1.2rem;
         border-radius: 8px;
         box-shadow: 3px 3px 5px 2px var(--shadow-color);
+    }
+
+    .listing-meta {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 columns side-by-side */
+        gap: 1rem;
+        width: 100%;
+        margin: 1rem 0;
+        background: rgba(0,0,0,0.2); /* Optional: visual separation */
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-family: 'Courier New', monospace; /* Keep the retro feel here */
+    }
+
+    @media (max-width: 600px) {
+        .listing-meta {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .forum-section, .listings-section {
+            grid-template-columns: 1fr; /* Force single column */
+        }
+
+        .post, .listing {
+            max-width: 100%; /* Let it take full width on mobile */
+        }
     }
 
     .post h2, listing h2 {
         margin: 0;
     }
 
-    .post p, listing p {
-        font-family: system-ui;
+    .post p, .listing p {
+        font-family: system-ui, -apple-system, sans-serif; /* Much more compact than Courier */
+        line-height: 1.5;
+        margin: 0;
+        width: 100%;
     }
 
     .listing a {
@@ -434,6 +529,12 @@ FORUM/LISTINGS POSTS
         font-size: 0.95rem;
         padding: 0.4rem;
         border-radius: 12px;
+    }
+
+    /* Centering signal inside forum/listing grids */
+    .forum-section .signal, .listings-section .signal {
+        grid-column: 1 / -1; /* Start at line 1, go to the last line */
+        justify-self: center;
     }
 
     .rating {
@@ -695,6 +796,79 @@ FORMS & INPUTS
         border-radius: 15px;
         box-shadow: 3px 3px 2px 2px var(--shadow-color);
     }
+
+    .feedback-form {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "icon input"
+            "icon button";
+        gap: 1rem;
+        align-items: start;
+
+
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+        background: var(--input-bg, #f4f4f4);
+        border: 2px solid white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 3px 3px 2px 2px var(--shadow-color, rgba(0,0,0,0.1));
+    }
+
+    .feedback-form img {
+        grid-area: icon;
+        width: 120px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .feedback-form textarea {
+        grid-area: input;
+        width: 100%;
+        min-height: 100px;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .feedback-form button {
+        grid-area: button;
+        justify-self: end;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .feedback-form div:empty {
+        display: none;
+    }
+
+    @media (max-width: 480px) {
+        .feedback-form {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "icon"
+                "input"
+                "button";
+            justify-items: center;
+        }
+
+        .feedback-form img {
+            width: 150px;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-form button {
+            width: 100%;
+        }
+    }
+
+    .forum-form,  .feedback-form {
+        max-width: 1000px;
+    }
+
     .comment-form {
         padding: 1rem;
     }
@@ -704,7 +878,8 @@ FORMS & INPUTS
     .comment-form input,
     .comment-form textarea,
     .review-form input,
-    .review-form textarea
+    .review-form textarea,
+    .feedback-form textarea
     {
         font-family: system-ui;
         width: 95%;
